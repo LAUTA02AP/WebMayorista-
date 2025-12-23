@@ -1,0 +1,183 @@
+/* ==========================================
+   LOGIN - ESTILOS AISLADOS
+   Solo se usan en LoginForm
+   ========================================== */
+
+/* Fondo general del login */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at top left, rgba(200, 247, 42, 0.16), transparent 55%),
+    radial-gradient(circle at bottom right, rgba(0, 96, 170, 0.18), transparent 55%),
+    #e5ebf5;
+}
+
+/* Contenedor para limitar el ancho */
+.login-container {
+  width: 100%;
+  max-width: 420px;
+}
+
+/* Tarjeta principal */
+.login-form {
+  position: relative;
+  background-color: var(--primary-white);
+  border-radius: 18px;
+  padding: 32px 28px 24px;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.16);
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  overflow: hidden;
+}
+
+/* Pequeño acento de color en el borde izquierdo */
+.login-form::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 18px;
+  bottom: 18px;
+  width: 4px;
+  border-radius: 999px;
+  background: linear-gradient(
+    180deg,
+    var(--primary-green),
+    var(--primary-blue)
+  );
+}
+
+/* "Logo" arriba del formulario */
+.login-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: var(--light-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.login-logo-icon {
+  font-size: 22px;
+}
+
+/* Titulos */
+.login-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--primary-blue);
+  margin-bottom: 4px;
+}
+
+.login-subtitle {
+  font-size: 13px;
+  color: var(--text-gray);
+  margin-bottom: 22px;
+}
+
+/* Campos */
+.login-form .input-group {
+  margin-bottom: 16px;
+}
+
+.input-labelLog {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.login-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1.8px solid var(--border-color);
+  font-size: 14px;
+  background-color: #f9fafb;
+  transition: all 0.18s ease;
+}
+
+.login-input::placeholder {
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+.login-input:focus {
+  outline: none;
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px rgba(0, 96, 170, 0.18);
+  background-color: #ffffff;
+}
+
+/* Botón */
+.login-button {
+  width: 100%;
+  margin-top: 8px;
+  padding: 11px 16px;
+  border-radius: 999px;
+  border: none;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  background: linear-gradient(
+    135deg,
+    var(--primary-blue),
+    #004580
+  );
+  color: var(--primary-white);
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.25);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+
+.login-button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.03);
+  box-shadow: 0 14px 26px rgba(15, 23, 42, 0.32);
+}
+
+.login-button:active {
+  transform: translateY(0);
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.25);
+}
+
+/* Error */
+.login-error {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #b91c1c;
+  background-color: #fee2e2;
+  border-radius: 8px;
+  padding: 8px 10px;
+  border: 1px solid #fecaca;
+}
+
+/* Pie del formulario */
+.login-footnote {
+  margin-top: 14px;
+  font-size: 11px;
+  text-align: center;
+  color: #9ca3af;
+}
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+
+@media (max-width: 480px) {
+  .login-page {
+    padding: 16px;
+  }
+
+  .login-form {
+    padding: 26px 22px 20px;
+  }
+
+  .login-title {
+    font-size: 20px;
+  }
+}

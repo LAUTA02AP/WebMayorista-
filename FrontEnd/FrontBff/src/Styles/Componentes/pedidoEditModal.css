@@ -1,0 +1,240 @@
+/* =========================================================
+   PEDIDO EDIT MODAL
+   ========================================================= */
+
+/* -------------------------
+   Overlay (fondo borroso)
+   ------------------------- */
+.pem-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.35);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 16px;
+  z-index: 2000;
+}
+
+/* -------------------------
+   Contenedor del modal
+   ------------------------- */
+.pem-modal {
+  width: min(520px, 100%);
+  background: var(--bg-card);
+
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  box-shadow: var(--shadow-md);
+
+  overflow: hidden;
+}
+
+/* -------------------------
+   Header
+   ------------------------- */
+.pem-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.pem-title {
+  font-weight: 800;
+  color: var(--text-dark);
+  font-size: 14px;
+}
+
+.pem-id {
+  color: var(--primary-blue);
+}
+
+/* Botón cerrar */
+.pem-close {
+  width: 34px;
+  height: 34px;
+
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: #fff;
+
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.pem-close:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+  background: #f7fafc;
+}
+
+.pem-close:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+.pem-close:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 96, 170, 0.18);
+  border-color: var(--primary-blue);
+}
+
+/* -------------------------
+   Body
+   ------------------------- */
+.pem-body {
+  padding: 14px 16px;
+  display: grid;
+  gap: 12px;
+}
+
+/* Campos */
+.pem-field {
+  display: grid;
+  gap: 6px;
+}
+
+.pem-field span {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-gray);
+}
+
+.pem-field input {
+  padding: 10px 12px;
+
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: #fff;
+
+  font-size: 13px;
+  color: var(--text-dark);
+
+  transition: all 0.15s ease;
+}
+
+.pem-field input:focus {
+  outline: none;
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 2px rgba(0, 96, 170, 0.15);
+}
+
+.pem-field input:disabled {
+  opacity: 0.75;
+  background: #f3f4f6;
+}
+
+/* Mensaje error */
+.pem-error {
+  padding: 10px 12px;
+  border-radius: 10px;
+
+  border: 1px solid rgba(220, 38, 38, 0.35);
+  background: rgba(220, 38, 38, 0.08);
+
+  color: #b91c1c;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* -------------------------
+   Footer / Acciones
+   ------------------------- */
+.pem-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+
+  padding: 14px 16px;
+  border-top: 1px solid var(--border-color);
+
+  /* look más “pro” */
+  background: rgba(255, 255, 255, 0.6);
+}
+
+/* Base botones (aplica a tus .btn-table dentro del modal) */
+.pem-actions .btn-table {
+  appearance: none;
+  border: 1px solid var(--border-color);
+  background: #ffffff;
+  color: var(--text-dark);
+
+  padding: 10px 14px;
+  border-radius: 999px;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease,
+    background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+
+  box-shadow: var(--shadow-sm);
+}
+
+/* Hover / Active */
+.pem-actions .btn-table:hover:not(:disabled) {
+  background: #f7fafc;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.pem-actions .btn-table:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Focus accesible */
+.pem-actions .btn-table:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 96, 170, 0.18);
+  border-color: var(--primary-blue);
+}
+
+/* Guardar (primario) */
+.pem-actions .btn-table-primary {
+  background: var(--primary-blue);
+  border-color: var(--primary-blue);
+  color: var(--primary-white);
+}
+
+.pem-actions .btn-table-primary:hover:not(:disabled) {
+  background: var(--dark-blue);
+  border-color: var(--dark-blue);
+}
+
+/* Disabled */
+.pem-actions .btn-table:disabled {
+  opacity: 0.55;
+  cursor: default;
+  transform: none;
+  box-shadow: none;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (max-width: 520px) {
+  .pem-close {
+    border-radius: 999px;
+  }
+
+  /* Botones grandes y cómodos */
+  .pem-actions {
+    flex-direction: column-reverse; /* Guardar arriba, cancelar abajo */
+  }
+
+  .pem-actions .btn-table {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 14px;
+  }
+}
