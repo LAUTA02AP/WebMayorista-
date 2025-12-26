@@ -1,3 +1,4 @@
+// src/app/providers/AuthProvider.jsx
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { getUserInfo, loginUser, logoutUser } from "../../services/Services";
 
@@ -27,23 +28,39 @@ export function AuthProvider({ children }) {
       }
     })();
 
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const login = async (usuario, clave) => {
-    await loginUser(usuario, clave);   // set-cookie HttpOnly
-    const me = await refreshUser();    // trae user real
+    await loginUser(usuario, clave); // set-cookie HttpOnly
+    const me = await refreshUser();  // trae user real
     return me;
   };
 
   const logout = async () => {
-    try { await logoutUser(); } catch {}
-    localStorage.clear();
+    try {
+      await logoutUser();
+    } catch {
+      // si falla el backend igual cerramos sesión local
+    }
+
+    // ✅ NO BORRAR localStorage completo:
+    // si lo borrás, perdés "theme" y vuelve a light al re-loguear.
+    // Si algún día guardás otras cosas y querés limpiar,
+    // borrá selectivo y preservá el theme.
+    //
+    // Ejemplo (si lo necesitás):
+    // Object.keys(localStorage).forEach((k) => {
+    //   if (k !== "theme" && !k.startsWith("theme_user_")) localStorage.removeItem(k);
+    // });
+
     setUser(null);
   };
 
   const value = useMemo(() => {
-    const role = String(user?.rolUsuario ?? "");
+    const role = String(user?.rolUsuario ?? user?.rol ?? "");
     return {
       user,
       role,

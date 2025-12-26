@@ -1,84 +1,134 @@
 /* ==========================================
-   SIDEBAR / NAVBAR LATERAL
+   SIDEBAR / NAVBAR LATERAL (DESKTOP + MOBILE)
+   ------------------------------------------
+   Este archivo maneja:
+   1) Sidebar fijo en desktop con diseño minimalista
+   2) Menú tipo "popover" en mobile (abre/cierra)
+   3) Overlay (fondo oscuro) en mobile
+   4) Soporte completo para dark mode
+   5) Estilo corporativo limpio y profesional
+   ========================================== */
+
+/* ==========================================
+   1) CONTENEDOR PRINCIPAL DEL SIDEBAR (DESKTOP)
+   ------------------------------------------
+   - Fijo a la izquierda, ocupa toda la altura
+   - Ancho fijo (190px)
+   - Diseño limpio sin sombras excesivas
    ========================================== */
 .modern-nav {
   position: fixed;
   left: 0;
   top: 0;
 
-  /* ✅ Evita que quede en 0 si --sidebar-width existe pero vale 0 */
+  /* Ancho fijo para desktop */
   width: 190px;
   min-width: 190px;
-  /* Si querés seguir usando la variable, dejá esto debajo (pisará width si es válido):
-     width: var(--sidebar-width, 190px);
-  */
 
   height: 100vh;
-  background-color: #FBFDFD;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.08);
+
+  /* ✅ Usa variables: responde a light/dark */
+  background-color: var(--bg-card);
+  
+  /* Borde sutil a la derecha */
+  border-right: 1px solid var(--border-color);
+
   display: flex;
   flex-direction: column;
 
+  /* Por encima del contenido normal */
   z-index: 1000;
-  overflow-y: auto;
-  padding: 0;
-  border-right: 2px solid #E5E7EB;
 
-  transition: transform 0.3s ease;
+  /* Scroll interno del sidebar */
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+
+  /* Animación suave para transiciones */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: transform;
 }
 
-/* Scrollbar personalizada */
+/* ==========================================
+   2) SCROLLBAR PERSONALIZADA (WEBKIT)
+   ------------------------------------------
+   - Diseño minimalista y discreto
+   - Solo Chrome/Edge/Safari
+   ========================================== */
 .modern-nav::-webkit-scrollbar {
-  width: 6px;
-}
-.modern-nav::-webkit-scrollbar-track {
-  background: #F5F7FA;
-}
-.modern-nav::-webkit-scrollbar-thumb {
-  background: #C8F72A;
-  border-radius: 3px;
-}
-.modern-nav::-webkit-scrollbar-thumb:hover {
-  background: #B5E615;
+  width: 4px;
 }
 
-/* Encabezado del sidebar: logo + nombre empresa */
+.modern-nav::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 8px 0;
+}
+
+.modern-nav::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 10px;
+  transition: background 0.2s ease;
+}
+
+.modern-nav::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.5);
+}
+
+/* ==========================================
+   3) HEADER DEL SIDEBAR (LOGO + EMPRESA)
+   ------------------------------------------
+   - Branding simple con logo
+   - Borde inferior sutil
+   ========================================== */
 .nav-header {
-  padding: 18px 20px 10px 20px;
+  padding: 20px 16px 16px 16px;
   border-bottom: 1px solid var(--border-color);
+
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 4px;
+
+  margin-bottom: 8px;
 }
 
+/* Logo circular simple */
 .nav-logo-circle {
   width: 32px;
   height: 32px;
-  border-radius: 999px;
+  border-radius: 50%;
+
   background-color: var(--primary-blue);
   color: var(--primary-white);
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   font-weight: 700;
-  font-size: 15px;
+  font-size: 14px;
+
+  flex-shrink: 0;
 }
 
+/* Título de la empresa */
 .nav-title {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--text-dark);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
-/* Lista de navegación */
+/* ==========================================
+   4) LISTA Y ITEMS DEL MENÚ
+   ------------------------------------------
+   - Organización vertical limpia
+   - Espaciado uniforme
+   ========================================== */
 .nav-list {
   list-style: none;
-  padding: 8px 0 24px 0;
+  padding: 8px 0 20px 0;
   margin: 0;
+
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -88,6 +138,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
 .nav-item {
@@ -95,87 +146,87 @@
   padding: 0;
 }
 
-/* Enlaces / botones */
+/* ==========================================
+   5) LINKS / BOTONES DEL MENÚ
+   ------------------------------------------
+   - Diseño corporativo limpio
+   - Hover suave con fondo redondeado
+   - Active con fondo azul redondeado
+   - Estilo minimalista profesional
+   ========================================== */
 .nav-link {
   display: flex;
   align-items: center;
-  width: 100%;
-  padding: 14px 24px;
-  color: #1A1A1A;
+  width: calc(100% - 16px);
+
+  padding: 10px 12px;
+  margin: 0 8px;
+  border-radius: 8px;
+
+  /* ✅ Texto usa variable (dark mode friendly) */
+  color: var(--text-gray);
+
   text-decoration: none;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
+
   transition: all 0.2s ease;
   position: relative;
-  border-left: 4px solid transparent;
-  gap: 12px;
+
+  gap: 10px;
+
   cursor: pointer;
   background: transparent;
   border: none;
   text-align: left;
 }
 
-.nav-link::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 0;
-  height: 0;
-  background-color: #0060AA;
-  transition: all 0.2s ease;
-}
-
+/* Hover: fondo sutil redondeado */
 .nav-link:hover {
-  background-color: #F5F7FA;
-  color: #0060AA;
-  border-left-color: #C8F72A;
-}
-.nav-link:hover::before {
-  width: 4px;
-  height: 60%;
+  color: var(--text-dark);
+  background-color: rgba(148, 163, 184, 0.08);
 }
 
+/* Estado activo: fondo azul redondeado completo */
 .nav-link.active {
-  background-color: #E8F4FE;
-  border-left-color: #0060AA;
-  color: #0060AA;
+  background-color: rgba(0, 96, 170, 0.1);
+  color: var(--primary-blue);
   font-weight: 600;
-}
-.nav-link.active::after {
-  content: "";
-  position: absolute;
-  right: 16px;
-  width: 6px;
-  height: 6px;
-  background-color: #0060AA;
-  border-radius: 50%;
 }
 
 /* ==========================================
-   CONFIGURACIÓN + SWITCH (funcional)
+   6) CONFIGURACIÓN + SWITCH
+   ------------------------------------------
+   - Panel expandible para ajustes
+   - Switch moderno para dark mode
    ========================================== */
 .nav-settings {
   position: relative;
+  margin: 4px 0;
 }
 
-/* icono tuerca (svg) */
+/* Icono de configuración */
 .gear-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   color: var(--text-gray);
+  transition: color 0.2s ease;
 }
 
-/* Panel */
+.nav-settings:hover .gear-icon {
+  color: var(--text-dark);
+}
+
+/* Panel popover de configuración */
 .settings-popover {
-  margin: 8px 16px 0 16px;
+  margin: 8px 12px 8px 12px;
   padding: 12px;
+
   border: 1px solid var(--border-color);
-  border-radius: 12px;
-  background: var(--bg-card);
-  box-shadow: var(--shadow-md);
+  border-radius: 8px;
+
+  background: var(--bg-page);
 }
 
 .settings-row {
@@ -186,12 +237,12 @@
 }
 
 .settings-label {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--text-dark);
 }
 
-/* Switch */
+/* Switch moderno */
 .switch {
   display: inline-flex;
   align-items: center;
@@ -203,227 +254,246 @@
 
 .switch-ui {
   width: 44px;
-  height: 26px;
+  height: 24px;
+
   border-radius: 999px;
   border: 1px solid var(--border-color);
-  background: rgba(148, 163, 184, 0.25);
+
+  background: var(--bg-card);
   position: relative;
+
   cursor: pointer;
+  
+  transition: all 0.25s ease;
 }
 
+/* Bolita del switch */
 .switch-ui::after {
   content: "";
-  width: 20px;
-  height: 20px;
-  border-radius: 999px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  width: 18px;
+  height: 18px;
+
+  border-radius: 50%;
+  background: var(--text-gray);
+
   position: absolute;
   top: 50%;
-  left: 3px;
+  left: 2px;
   transform: translateY(-50%);
-  transition: left 0.2s ease;
+
+  transition: all 0.25s ease;
 }
 
+/* Estado hover del switch */
+.switch-ui:hover {
+  border-color: var(--primary-blue);
+}
+
+/* Estado ON del switch */
 .switch input:checked + .switch-ui {
-  background: rgba(96, 165, 250, 0.35);
+  background: var(--primary-blue);
+  border-color: var(--primary-blue);
 }
 
 .switch input:checked + .switch-ui::after {
-  left: 21px;
+  left: 22px;
+  background: var(--primary-white);
 }
 
 /* ==========================================
-   Logout (SIN emoji, estilo profesional)
+   7) LOGOUT (AL FINAL DEL SIDEBAR)
+   ------------------------------------------
+   - Botón outline simple al pie del sidebar
+   - Hover con fondo azul
    ========================================== */
 .nav-logout {
   margin-top: auto;
-  padding: 20px 16px;
-  border-top: 2px solid var(--border-color);
+  padding: 16px 12px 20px 12px;
+  border-top: 1px solid var(--border-color);
 }
 
 .logout-btn {
   width: 100%;
-  padding: 12px 14px;
+  padding: 10px 14px;
 
   background: transparent;
   color: var(--primary-blue);
 
-  border: 2px solid var(--primary-blue);
-  border-radius: 10px;
+  border: 1px solid var(--primary-blue);
+  border-radius: 8px;
 
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 600;
 
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease,
-    box-shadow 0.2s ease;
+  
+  transition: all 0.2s ease;
 
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0; /* sin ícono */
-}
-
-/* IMPORTANTE: elimina el emoji */
-.logout-btn::before {
-  content: none !important;
+  gap: 6px;
 }
 
 .logout-btn:hover {
   background-color: var(--primary-blue);
   color: var(--primary-white);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 14px rgba(0, 96, 170, 0.22);
 }
 
 .logout-btn:active {
-  transform: translateY(0);
-  box-shadow: none;
+  transform: scale(0.98);
 }
 
 /* ==========================================
-   MODO OSCURO (solo cuando data-theme="dark")
-   No rompe el modo claro ni el responsive
+   8) DARK MODE (AJUSTES ESPECÍFICOS)
+   ------------------------------------------
+   - Refinamientos para modo oscuro
+   - Mantiene el mismo diseño limpio
    ========================================== */
-:root[data-theme="dark"] .modern-nav {
-  background-color: var(--bg-card);
-  border-right: 1px solid var(--border-color);
-  box-shadow: 2px 0 14px rgba(0, 0, 0, 0.45);
-}
 
-:root[data-theme="dark"] .nav-header {
-  border-bottom: 1px solid var(--border-color);
-}
-
-:root[data-theme="dark"] .nav-title {
-  color: var(--text-dark);
-}
-
-:root[data-theme="dark"] .nav-link {
-  color: var(--text-dark);
-}
-
-:root[data-theme="dark"] .nav-link::before {
-  background-color: var(--primary-blue);
-}
-
+/* Hover en dark mode */
 :root[data-theme="dark"] .nav-link:hover {
-  background-color: rgba(96, 165, 250, 0.14);
-  color: var(--primary-blue);
-  border-left-color: var(--primary-blue);
+  background-color: rgba(148, 163, 184, 0.12);
+  color: var(--text-dark);
 }
 
+/* Activo en dark mode */
 :root[data-theme="dark"] .nav-link.active {
-  background-color: rgba(96, 165, 250, 0.18);
-  border-left-color: var(--primary-blue);
-  color: var(--primary-blue);
+  background-color: rgba(96, 165, 250, 0.15);
+  color: #60a5fa;
 }
 
-:root[data-theme="dark"] .nav-link.active::after {
-  background-color: var(--primary-blue);
+/* Logo en dark mode */
+:root[data-theme="dark"] .nav-logo-circle {
+  background-color: #60a5fa;
 }
 
-:root[data-theme="dark"] .nav-logout {
-  border-top: 1px solid var(--border-color);
-}
-
+/* Logout en dark mode */
 :root[data-theme="dark"] .logout-btn {
-  color: var(--primary-blue);
-  border-color: var(--primary-blue);
+  border-color: #60a5fa;
+  color: #60a5fa;
 }
 
 :root[data-theme="dark"] .logout-btn:hover {
-  background-color: var(--primary-blue);
-  color: #0B1220;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+  background-color: #60a5fa;
+  color: #0b1220;
 }
 
-/* Scrollbar personalizada (dark) */
-:root[data-theme="dark"] .modern-nav::-webkit-scrollbar-track {
-  background: rgba(148, 163, 184, 0.10);
-}
+/* Scrollbar en dark mode */
 :root[data-theme="dark"] .modern-nav::-webkit-scrollbar-thumb {
-  background: rgba(96, 165, 250, 0.55);
+  background: rgba(148, 163, 184, 0.25);
 }
+
 :root[data-theme="dark"] .modern-nav::-webkit-scrollbar-thumb:hover {
-  background: rgba(96, 165, 250, 0.75);
+  background: rgba(148, 163, 184, 0.4);
+}
+
+/* Settings popover en dark mode */
+:root[data-theme="dark"] .settings-popover {
+  background: rgba(15, 23, 42, 0.5);
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
 /* ==========================================
-   RESPONSIVE
+   9) RESPONSIVE (MOBILE <= 768px)
+   ------------------------------------------
+   - Botón hamburguesa flotante
+   - Sidebar como popover dropdown
+   - Overlay con blur
    ========================================== */
 @media (max-width: 768px) {
-  /* Botón menú mobile (prolijo) */
+  
+  /* ======================================
+     9.1) BOTÓN HAMBURGUESA (☰)
+     - Posicionado arriba a la derecha
+     - Diseño simple y funcional
+     ====================================== */
   .mobile-menu-btn {
     position: fixed;
-    top: 14px;
-    left: 12px;
+    top: 16px;
+    right: 16px;
+
     z-index: 3002;
 
-    width: 38px;
-    height: 38px;
+    width: 40px;
+    height: 40px;
 
     background-color: var(--primary-blue);
     color: var(--primary-white);
 
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    border-radius: 10px;
+    border: none;
+    border-radius: 8px;
 
     font-size: 20px;
     line-height: 1;
 
     cursor: pointer;
 
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
-    transition: transform 0.15s ease, box-shadow 0.15s ease,
-      background-color 0.15s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    
+    transition: all 0.2s ease;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .mobile-menu-btn:hover {
-    background-color: var(--dark-blue);
-    transform: translateY(-1px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
   }
 
   .mobile-menu-btn:active {
-    transform: translateY(0);
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+    transform: scale(0.95);
   }
 
-  /* Fondo borroso */
+  /* ======================================
+     9.2) OVERLAY (FONDO OSCURO)
+     - Backdrop con blur
+     - Click para cerrar menú
+     ====================================== */
   .mobile-overlay {
     position: fixed;
     inset: 0;
     z-index: 3000;
-    background: rgba(0, 0, 0, 0.28);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
   }
 
-  /* ✅ En mobile, el nav pasa a ser “cajita” (popover) */
+  /* ======================================
+     9.3) SIDEBAR EN MOBILE (POPOVER)
+     - Dropdown desde arriba a la derecha
+     - Ancho responsivo
+     ====================================== */
   .modern-nav {
     position: fixed;
-    top: 72px; /* debajo del botón */
-    left: 16px;
-    height: auto; /* no full height */
-    max-height: 80vh; /* que no se vaya de pantalla */
-    width: min(86vw, 300px);
+    top: 68px;
+    right: 16px;
+    left: auto;
+
+    height: auto;
+    max-height: calc(100vh - 88px);
+
+    width: min(85vw, 280px);
     min-width: 0;
 
-    border-radius: 14px;
-    border-right: none;
-    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.25);
-    overflow: hidden; /* respeta el radius */
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+
+    overflow: hidden;
     overflow-y: auto;
 
     z-index: 3001;
 
-    /* Estado cerrado */
+    /* Estado cerrado (invisible) */
     opacity: 0;
-    transform: translateY(-8px) scale(0.98);
+    transform: translateY(-8px) scale(0.95);
     pointer-events: none;
-    transition: opacity 0.18s ease, transform 0.18s ease;
+
+    transition: all 0.2s ease;
   }
 
   /* Estado abierto */
@@ -433,17 +503,43 @@
     pointer-events: auto;
   }
 
-  /* Dark: overlay + sombra más fuerte */
+  /* Ajuste de padding en mobile */
+  .nav-header {
+    padding: 16px 14px 14px 14px;
+  }
+
+  .nav-items-left {
+    gap: 1px;
+  }
+
+  .nav-link {
+    margin: 0 8px;
+    padding: 9px 10px;
+  }
+
+  .settings-popover {
+    margin: 6px 8px 6px 8px;
+  }
+
+  .nav-logout {
+    padding: 14px 8px 16px 8px;
+  }
+
+  /* ======================================
+     9.4) DARK MODE EN MOBILE
+     - Overlay más oscuro
+     - Mantiene diseño limpio
+     ====================================== */
   :root[data-theme="dark"] .mobile-overlay {
-    background: rgba(0, 0, 0, 0.50);
+    background: rgba(0, 0, 0, 0.5);
   }
 
   :root[data-theme="dark"] .modern-nav {
-    box-shadow: 0 18px 55px rgba(0, 0, 0, 0.55);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.08);
   }
 
   :root[data-theme="dark"] .mobile-menu-btn {
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+    background-color: #60a5fa;
   }
 }

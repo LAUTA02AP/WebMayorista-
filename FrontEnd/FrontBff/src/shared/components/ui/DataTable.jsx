@@ -7,7 +7,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import "../styles/Generales/Table.css";
+import "../../../styles/Generales/Table.css";
 
 export default function DataTable({
   data,

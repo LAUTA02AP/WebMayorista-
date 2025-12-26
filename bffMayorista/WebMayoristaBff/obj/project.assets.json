@@ -545,11 +545,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Usuario\\Desktop\\bffMayorista\\WebMayoristaBff\\WebMayoristaBff.csproj",
+      "projectUniqueName": "C:\\Users\\Usuario\\Desktop\\WebMayorista\\bffMayorista\\WebMayoristaBff\\WebMayoristaBff.csproj",
       "projectName": "WebMayoristaBff",
-      "projectPath": "C:\\Users\\Usuario\\Desktop\\bffMayorista\\WebMayoristaBff\\WebMayoristaBff.csproj",
+      "projectPath": "C:\\Users\\Usuario\\Desktop\\WebMayorista\\bffMayorista\\WebMayoristaBff\\WebMayoristaBff.csproj",
       "packagesPath": "C:\\Users\\Usuario\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Usuario\\Desktop\\bffMayorista\\WebMayoristaBff\\obj\\",
+      "outputPath": "C:\\Users\\Usuario\\Desktop\\WebMayorista\\bffMayorista\\WebMayoristaBff\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

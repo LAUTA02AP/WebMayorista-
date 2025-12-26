@@ -2,12 +2,18 @@
    PÁGINAS CON TABLA (LAYOUT GENERAL)
    ========================================== */
 
+/* Contenedor principal de la página con tabla:
+   - Columna
+   - Espaciado entre secciones */
 .table-page-wrapper {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
+/* Encabezado de la página:
+   - Alinea elementos en una fila
+   - Espacia izquierda y derecha */
 .table-page-header {
   display: flex;
   align-items: center;
@@ -16,23 +22,27 @@
   margin-bottom: 4px;
 }
 
+/* Bloque izquierdo del header (título + subtítulo + volver, etc.) */
 .table-page-header-left {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
+/* Título principal de la página */
 .table-page-title {
   font-size: 18px;
   font-weight: 700;
   color: var(--primary-blue);
 }
 
+/* Subtítulo / descripción */
 .table-page-subtitle {
   font-size: 13px;
   color: var(--text-gray);
 }
 
+/* Bloque derecho del header (acciones: botones, filtros, etc.) */
 .table-page-header-right {
   display: flex;
   align-items: center;
@@ -43,6 +53,8 @@
    CARD (TOOLBAR + TABLA)
    ========================================== */
 
+/* “Tarjeta” que envuelve toolbar + tabla:
+   - Fondo, borde, sombra, padding */
 .table-card {
   background-color: var(--bg-card);
   border-radius: 12px;
@@ -51,6 +63,8 @@
   padding: 14px 16px 16px 16px;
 }
 
+/* Barra superior (toolbar) con buscador/acciones:
+   - Izquierda y derecha separados */
 .table-toolbar {
   display: flex;
   align-items: center;
@@ -58,43 +72,50 @@
   gap: 12px;
 }
 
+/* Lado izquierdo del toolbar (ej: buscador) */
 .table-toolbar-left {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
+/* Lado derecho del toolbar (ej: botones “nuevo”, “exportar”) */
 .table-toolbar-right {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
+/* Wrapper de la tabla:
+   - Permite scroll horizontal si la tabla es ancha */
 .table-wrapper {
   width: 100%;
   overflow-x: auto;
   margin-top: 10px;
-  -webkit-overflow-scrolling: touch;
+  -webkit-overflow-scrolling: touch; /* scroll más suave en iOS */
 }
 
 /* ==========================================
    TABLA (DESKTOP)
    ========================================== */
 
+/* Estilos base de la tabla en desktop */
 .table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: collapse; /* une bordes (sin “doble línea”) */
   font-size: 14px;
   background-color: var(--bg-card);
   border-radius: 10px;
   box-shadow: var(--shadow-sm);
-  overflow: hidden;
+  overflow: hidden; /* importante para que el border-radius recorte */
 }
 
+/* Fondo del encabezado (thead) */
 .table thead {
-  background-color: #EEF2F7;
+  background-color: var(--light-blue);
 }
 
+/* Celdas del encabezado */
 .table th {
   padding: 10px 16px;
   text-align: left;
@@ -102,9 +123,10 @@
   color: var(--text-dark);
   border-bottom: 1px solid var(--border-color);
   font-size: 13px;
-  white-space: nowrap;
+  white-space: nowrap; /* evita saltos de línea */
 }
 
+/* Celdas del cuerpo */
 .table td {
   padding: 10px 16px;
   border-top: 1px solid var(--border-color);
@@ -113,31 +135,34 @@
   vertical-align: middle;
 }
 
-/* Zebra */
+/* Zebra striping: filas pares con otro fondo */
 .table tbody tr:nth-child(even) {
-  background-color: #F9FAFB;
+  background-color: var(--bg-page);
 }
 
+/* Hover sobre filas */
 .table tbody tr:hover {
   background-color: var(--light-blue);
 }
 
-/* Alineaciones desktop */
+/* Clases de alineación (desktop) */
 .table .text-right { text-align: right; }
 .table .text-center { text-align: center; }
 
-/* Acciones desktop */
+/* Columna de acciones: evita que los botones se vayan a otra línea */
 .table .table-actions {
   white-space: nowrap;
 }
 
-/* Botones */
+/* Estilo base para botones dentro de la tabla */
 .table .btn-table {
   padding: 6px 10px;
   font-size: 12px;
   border-radius: 6px;
+  transition: all 0.2s ease;
 }
 
+/* Botón principal (ej: ver, guardar, etc.) */
 .table .btn-table-primary {
   background-color: var(--primary-blue);
   color: var(--primary-white);
@@ -145,18 +170,21 @@
   cursor: pointer;
 }
 
+/* Hover del botón principal */
 .table .btn-table-primary:hover {
   background-color: var(--dark-blue);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 96, 170, 0.3);
 }
 
-/* Tabla compacta */
+/* Variante compacta: menos padding vertical */
 .table--compact th,
 .table--compact td {
   padding-top: 6px;
   padding-bottom: 6px;
 }
 
-/* Tabla flat */
+/* Variante “flat”: sin sombra, con borde */
 .table--flat {
   box-shadow: none;
   border: 1px solid var(--border-color);
@@ -166,31 +194,38 @@
    BUSCADOR / COUNT
    ========================================== */
 
+/* Wrapper del buscador: permite poner icono dentro, etc. */
 .table-search-wrapper {
   position: relative;
   min-width: 220px;
 }
 
+/* Input del buscador */
 .table-search-input {
   width: 100%;
   padding: 8px 12px;
-  border-radius: 999px;
+  border-radius: 999px; /* tipo “píldora” */
   border: 1px solid var(--border-color);
   font-size: 13px;
-  background-color: #ffffff;
+  background-color: var(--bg-card);
+  color: var(--text-dark);
+  transition: all 0.2s ease;
 }
 
+/* Placeholder del buscador */
 .table-search-input::placeholder {
   color: var(--text-gray);
   font-size: 12px;
 }
 
+/* Focus del buscador */
 .table-search-input:focus {
   outline: none;
   border-color: var(--primary-blue);
   box-shadow: 0 0 0 2px rgba(0, 96, 170, 0.15);
 }
 
+/* Contador/estado (ej: “20 resultados”) */
 .table-count {
   font-size: 12px;
   color: var(--text-gray);
@@ -200,6 +235,7 @@
    PAGINACIÓN
    ========================================== */
 
+/* Contenedor de paginación: alineado a la derecha en desktop */
 .table-pagination {
   display: flex;
   justify-content: flex-end;
@@ -210,25 +246,31 @@
   color: var(--text-gray);
 }
 
+/* Botones de paginación */
 .table-pagination-button {
   padding: 4px 10px;
   border-radius: 999px;
   border: 1px solid var(--border-color);
-  background-color: #ffffff;
+  background-color: var(--bg-card);
+  color: var(--text-dark);
   cursor: pointer;
   font-size: 12px;
   transition: all 0.2s ease;
 }
 
+/* Hover (si NO está deshabilitado) */
 .table-pagination-button:hover:not(:disabled) {
   background-color: var(--light-blue);
+  border-color: var(--primary-blue);
 }
 
+/* Estado disabled */
 .table-pagination-button:disabled {
   opacity: 0.4;
   cursor: default;
 }
 
+/* Texto informativo (ej: “Página 1 de 4”) */
 .table-pagination-info {
   font-size: 12px;
   color: var(--text-gray);
@@ -238,6 +280,7 @@
    BOTÓN VOLVER
    ========================================== */
 
+/* Botón redondo “volver” */
 .btn-volver {
   display: inline-flex;
   align-items: center;
@@ -246,20 +289,36 @@
   height: 32px;
   border-radius: 999px;
   border: 1px solid var(--border-color);
-  background-color: #ffffff;
+  background-color: var(--bg-card);
   cursor: pointer;
   padding: 0;
   margin: 0;
   box-shadow: var(--shadow-sm);
   transition: all 0.2s ease;
+
+  /* ✅ FIX base: el botón define el color del icono */
+  color: var(--text-dark);
 }
 
+/* Icono “volver”
+   ✅ FIX: usa currentColor para que herede el color del botón.
+   ✅ Si es SVG, esto ayuda si el SVG respeta currentColor. */
 .icono-volver {
   width: 18px;
   height: 18px;
   display: block;
+
+  color: currentColor;
+
+  /* ✅ Extra por si el SVG usa fill/stroke:
+     - Si tu SVG tiene fill/stroke hardcodeados (ej: fill="#000"),
+       esto NO lo pisa. Lo ideal es que el SVG use fill="currentColor"
+       o stroke="currentColor". Pero esto ayuda en muchos casos. */
+  fill: currentColor;
+  stroke: currentColor;
 }
 
+/* Hover del botón volver */
 .btn-volver:hover {
   background-color: var(--light-blue);
   border-color: var(--primary-blue);
@@ -267,20 +326,27 @@
   box-shadow: var(--shadow-md);
 }
 
+/* Active del botón volver */
 .btn-volver:active {
   transform: translateY(0);
   box-shadow: var(--shadow-sm);
 }
-/* =========================================
-BOTON EDIT
-===================================== */
+
+
+/* ==========================================
+   BOTON EDIT
+   ========================================== */
+
+/* Botón de editar (borde rojo) */
 .btn-table-edit {
   border: 1px solid #dc2626;
   color: #dc2626;
-  background: #fff;
+  background: var(--bg-card);
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
+/* Hover del botón edit */
 .btn-table-edit:hover {
   background: rgba(220, 38, 38, 0.08);
 }
@@ -289,6 +355,7 @@ BOTON EDIT
    CELDA VALUE (para mobile)
    ========================================== */
 
+/* En mobile, el “valor” ocupa todo el ancho disponible */
 .table-cell-value {
   width: 100%;
 }
@@ -299,67 +366,79 @@ BOTON EDIT
 
 /* TABLET */
 @media (max-width: 1024px) {
+  /* Reduce padding de la card */
   .table-card { padding: 12px; }
 
+  /* Toolbar permite wrap */
   .table-toolbar {
     flex-wrap: wrap;
     align-items: flex-start;
     gap: 10px;
   }
 
+  /* Izquierda/derecha también wrap */
   .table-toolbar-left,
   .table-toolbar-right {
     flex-wrap: wrap;
     gap: 8px;
   }
 
+  /* Buscador se adapta y crece */
   .table-search-wrapper {
     min-width: 200px;
     flex: 1 1 260px;
   }
 
-  /* No fuerces ancho: scrollea solo si hace falta */
   .table { min-width: 0; }
 
+  /* Menos padding lateral en celdas */
   .table th,
   .table td {
     padding: 10px 12px;
   }
 }
 
-/* MOBILE -> CARDS (carta prolija + label/valor alineados) */
+/* MOBILE -> CARDS (la tabla se transforma en “cards”) */
 @media (max-width: 820px) {
+  /* Header en columna */
   .table-page-header {
     flex-direction: column;
     align-items: flex-start;
   }
 
+  /* Toolbar en columna */
   .table-toolbar {
     flex-direction: column;
     align-items: stretch;
   }
 
+  /* Lados del toolbar ocupan todo el ancho */
   .table-toolbar-left,
   .table-toolbar-right {
     width: 100%;
     justify-content: space-between;
   }
 
+  /* Buscador full width */
   .table-search-wrapper {
     width: 100%;
     min-width: 0;
   }
 
+  /* Se elimina el scroll horizontal en mobile (porque ya no es tabla tradicional) */
   .table-wrapper { overflow: visible; }
 
+  /* Tabla “plana” (sin fondo/sombra) porque cada fila será una card */
   .table {
     background: transparent;
     box-shadow: none;
     border-radius: 0;
   }
 
+  /* Oculta el encabezado */
   .table thead { display: none; }
 
+  /* Convierte estructura a bloques */
   .table,
   .table tbody,
   .table tr,
@@ -378,27 +457,28 @@ BOTON EDIT
     margin-bottom: 12px;
   }
 
-  /* Evita zebra y hover en cards */
+  /* Anula zebra/hover en modo cards */
   .table tbody tr:nth-child(even) { background: var(--bg-card); }
   .table tbody tr:hover { background: var(--bg-card); }
 
-  /* Cada "campo" dentro de la card */
+  /* Cada celda se vuelve “label + value” en grid */
   .table td {
     border: 0;
     padding: 12px 0;
-    text-align: left !important; /* ✅ evita que el label quede a la derecha */
+    text-align: left !important;
     display: grid;
-    grid-template-columns: 1fr auto; /* label/value */
+    grid-template-columns: 1fr auto;
     align-items: center;
     column-gap: 12px;
   }
 
-  /* Separador entre campos */
+  /* Línea divisoria entre “filas internas” de la card */
   .table td + td {
-    border-top: 1px solid rgba(0,0,0,0.06);
+    border-top: 1px solid var(--border-color);
+    opacity: 0.3;
   }
 
-  /* Label */
+  /* El label viene desde data-label del TD */
   .table td::before {
     content: attr(data-label);
     font-weight: 700;
@@ -409,32 +489,34 @@ BOTON EDIT
     line-height: 1.2;
   }
 
-  /* Value */
+  /* Value a la derecha por defecto */
   .table-cell-value {
     font-size: 14px;
     color: var(--text-dark);
     overflow-wrap: anywhere;
     word-break: break-word;
-    justify-self: end;       /* ✅ valor a la derecha */
+    justify-self: end;
     text-align: right;
   }
 
-  /* Si querés que algunas columnas no se alineen a la derecha, le sacás text-right */
+  /* Si NO es text-right, deja value alineado a la izquierda */
   .table td:not(.text-right) .table-cell-value {
     justify-self: start;
     text-align: left;
   }
 
-  /* Acciones: sin label, y botones alineados */
+  /* Acciones: layout especial */
   .table td.table-actions {
-    grid-template-columns: 1fr; /* una sola columna */
+    grid-template-columns: 1fr;
     padding-top: 14px;
   }
 
+  /* Sin label para acciones */
   .table td.table-actions::before {
-    content: ""; /* ✅ no mostrar “ACCIÓN” */
+    content: "";
   }
 
+  /* Contenedor de botones de acciones */
   .table td.table-actions .table-cell-value {
     justify-self: end;
     text-align: right;
@@ -443,12 +525,13 @@ BOTON EDIT
     flex-wrap: wrap;
   }
 
-  /* Botones más tocables */
+  /* Botones más grandes en mobile */
   .table .btn-table {
     padding: 10px 12px;
     font-size: 13px;
   }
 
+  /* Paginación distribuida */
   .table-pagination {
     justify-content: space-between;
     flex-wrap: wrap;

@@ -36,6 +36,37 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "Bff.Controllers.ProductosController",
+    "Method": "ObtenerTodos",
+    "RelativePath": "productos",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Bff.Controllers.ProductosController",
+    "Method": "ObtenerPaginado",
+    "RelativePath": "productos/pagina",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "pageNumber",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "pageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "Bff.Controllers.UserController",
     "Method": "GetCurrentUser",
     "RelativePath": "user",

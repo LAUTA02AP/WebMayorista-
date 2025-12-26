@@ -1,3 +1,4 @@
+// src/app/router/index.jsx
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
@@ -6,15 +7,31 @@ import LayoutWrapper from "../../shared/components/layout/LayoutWrapper.jsx";
 
 import LoginPage from "../../features/auth/LoginPage.jsx";
 import HomePage from "../../features/cliente/pages/HomePage.jsx";
+import PedidosPageCliente from "../../features/cliente/pages/PedidosPage.jsx";
+import ProductosPage from "../../features/productos/pages/ProductosPage.jsx";
+
+import { ThemeProvider } from "../providers/ThemeProvider";
 
 export default function AppRouter() {
   return (
     <Routes>
+      {/* Login SIEMPRE fuera del ThemeProvider */}
       <Route path="/" element={<LoginPage />} />
 
+      {/* Todo lo protegido queda dentro del ThemeProvider */}
       <Route element={<ProtectedRoute />}>
-        <Route element={<LayoutWrapper />}>
+        <Route
+          element={
+            <ThemeProvider>
+              <LayoutWrapper />
+            </ThemeProvider>
+          }
+        >
           <Route path="/home" element={<HomePage />} />
+          <Route path="/pedidos" element={<PedidosPageCliente />} />
+
+          {/* ✅ NUEVA RUTA */}
+          <Route path="/productos" element={<ProductosPage />} />
         </Route>
       </Route>
 
