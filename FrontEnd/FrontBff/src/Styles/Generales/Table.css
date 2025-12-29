@@ -299,6 +299,14 @@
   /* ✅ FIX base: el botón define el color del icono */
   color: var(--text-dark);
 }
+/* ✅ CAMBIO MODO OSCURO: SOLO BACKGROUND DEL BOTÓN VOLVER */
+:root[data-theme="dark"] .btn-volver {
+  background-color: #162033;
+}
+
+:root[data-theme="dark"] .btn-volver:hover {
+  background-color: #1d2a44;
+}
 
 /* Icono “volver”
    ✅ FIX: usa currentColor para que herede el color del botón.

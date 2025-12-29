@@ -60,24 +60,36 @@
         }
       }
     },
-    "/productos": {
-      "get": {
-        "tags": [
-          "Productos"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/productos/pagina": {
+    "/productos/obtener": {
       "get": {
         "tags": [
           "Productos"
         ],
         "parameters": [
+          {
+            "name": "texto",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": ""
+            }
+          },
+          {
+            "name": "disponible",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "ofertas",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
           {
             "name": "pageNumber",
             "in": "query",
@@ -96,6 +108,30 @@
               "default": 50
             }
           }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/productos/listas-filtros": {
+      "get": {
+        "tags": [
+          "Productos"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/productos/banner": {
+      "get": {
+        "tags": [
+          "Productos"
         ],
         "responses": {
           "200": {

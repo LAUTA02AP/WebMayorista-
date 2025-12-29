@@ -1,21 +1,22 @@
-﻿using System.Net.Http.Headers;     // AuthenticationHeaderValue
-using System.Net.Http.Json;        // PostAsJsonAsync
-using System.Text.Json;            // JsonSerializer, JsonElement
-using Bff.Services;                // SessionStore, SessionInfo
-using Microsoft.AspNetCore.Mvc;    // ControllerBase, ApiController, IActionResult, etc.
+﻿// Bff/Controllers/ProductosController.cs
+using System.Net.Http.Headers;   // AuthenticationHeaderValue
+using System.Net.Http.Json;      // PostAsJsonAsync
+using System.Text.Json;          // JsonSerializer, JsonElement
+using Bff.Services;              // SessionStore, SessionInfo
+using Microsoft.AspNetCore.Mvc;  // ControllerBase, ApiController, IActionResult
 
 namespace Bff.Controllers;
 
 [ApiController]
-[Route("productos")] // base: /productos
+[Route("productos")] // ✅ base: /productos  (esto es lo que consume React)
 public class ProductosController : ControllerBase
 {
-    // =============================================
-    // Dependencias del BFF
-    // =============================================
+    // ==========================================================
+    // Dependencias
+    // ==========================================================
     private readonly IHttpClientFactory _httpClientFactory; // crea HttpClient "ApiReal"
     private readonly SessionStore _store;                   // sid -> SessionInfo (AccessToken, IdUsuario, etc.)
-    private readonly IConfiguration _config;                // para leer Bff:CookieName, etc.
+    private readonly IConfiguration _config;                // config (Bff:CookieName)
 
     public ProductosController(IHttpClientFactory httpClientFactory, SessionStore store, IConfiguration config)
     {
@@ -24,78 +25,9 @@ public class ProductosController : ControllerBase
         _config = config;
     }
 
-    // =============================================
-    // DTOs MINIMOS para llamar a la API REAL
-    // =============================================
-    // Tu API real espera un body "ObtenerProductosWebParam" con:
-    // - IdUsuario
-    // - TextoBuscador
-    // - SoloDisponible
-    // - SoloOfertas
-    // - FiltrosProductos { PageNumber, PageSize, ... }
-    //
-    // Acá armamos solo lo que necesitamos para que compile y funcione.
-    // Si tu API real exige MÁS campos dentro de FiltrosProductos, los agregás acá.
-    public class FiltrosProductosDto
-    {
-        public int PageNumber { get; set; } = 1;
-        public int PageSize { get; set; } = 0; // 0 = “traer todo” (la API real lo cambia a nMaxFilas)
-    }
-
-    public class ObtenerProductosWebParamDto
-    {
-        public string IdUsuario { get; set; } = "";
-        public string TextoBuscador { get; set; } = ""; // filtro texto (vacío = sin filtro)
-        public bool SoloDisponible { get; set; } = false;
-        public bool SoloOfertas { get; set; } = false;
-        public FiltrosProductosDto FiltrosProductos { get; set; } = new();
-    }
-
-    // =============================================
-    // Helper: leer cookie -> buscar sesión
-    // =============================================
-    private bool TryGetSession(out SessionInfo session, out IActionResult? error)
-    {
-        // nombre de cookie configurable
-        var cookieName = _config["Bff:CookieName"] ?? "bff.sid";
-
-        // 1) leer cookie
-        if (!Request.Cookies.TryGetValue(cookieName, out var sid) || string.IsNullOrWhiteSpace(sid))
-        {
-            session = default!;
-            error = Unauthorized(new { message = "No autenticado (cookie faltante)." });
-            return false;
-        }
-
-        // 2) validar sesión en store
-        if (!_store.TryGet(sid, out session))
-        {
-            error = Unauthorized(new { message = "No autenticado (sesión inválida o vencida)." });
-            return false;
-        }
-
-        error = null;
-        return true;
-    }
-
-    // =============================================
-    // Helper: crear HttpClient a la API real + Bearer token
-    // =============================================
-    private HttpClient BuildApiClient(SessionInfo session)
-    {
-        // "ApiReal" lo registraste en Program.cs con BaseAddress = Bff:ApiBaseUrl
-        var api = _httpClientFactory.CreateClient("ApiReal");
-
-        // la API real tiene [Authorize(JwtBearer)] -> necesita Authorization: Bearer <token>
-        api.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", session.AccessToken);
-
-        return api;
-    }
-
-    // =============================================
-    // Helper: si la API real devuelve error como texto, intentamos devolver JSON si se puede
-    // =============================================
+    // ==========================================================
+    // Helper: devuelve JSON si se puede, sino texto
+    // ==========================================================
     private static object TryJson(string content)
     {
         try { return JsonSerializer.Deserialize<JsonElement>(content); }
@@ -103,92 +35,144 @@ public class ProductosController : ControllerBase
     }
 
     // ==========================================================
-    // ✅ GET /productos
-    // TRAE TODOS LOS PRODUCTOS (sin filtros)
-    // Internamente llama: POST API REAL /Productos/ObtenerProductos
-    // con PageSize = 0 (la API real lo transforma a nMaxFilas)
+    // Helper: leer cookie + buscar sesión en store
     // ==========================================================
-    [HttpGet]
-    public async Task<IActionResult> ObtenerTodos(CancellationToken ct)
+    private bool TryGetSession(out SessionInfo session, out IActionResult? error)
     {
-        // 1) validar cookie + sesión
-        if (!TryGetSession(out var session, out var err)) return err!;
+        var cookieName = _config["Bff:CookieName"] ?? "bff.sid";
 
-        // 2) la API real valida usuario por IdUsuario, así que lo necesitamos sí o sí
-        if (string.IsNullOrWhiteSpace(session.IdUsuario))
-            return Unauthorized(new { message = "Sesión sin IdUsuario. Revisá que el login lo esté guardando." });
-
-        // 3) armar HttpClient con Bearer token
-        var api = BuildApiClient(session);
-
-        // 4) armar body mínimo para traer TODO
-        // - TextoBuscador vacío
-        // - SoloDisponible false
-        // - SoloOfertas false
-        // - PageSize = 0  => la API real lo cambia a nMaxFilas y PageNumber = 1
-        var body = new ObtenerProductosWebParamDto
+        // 1) cookie
+        if (!Request.Cookies.TryGetValue(cookieName, out var sid) || string.IsNullOrWhiteSpace(sid))
         {
-            IdUsuario = session.IdUsuario!,
-            TextoBuscador = "",
-            SoloDisponible = false,
-            SoloOfertas = false,
-            FiltrosProductos = new FiltrosProductosDto
-            {
-                PageNumber = 1,
-                PageSize = 0
-            }
-        };
+            session = default!;
+            error = Unauthorized(new { message = "No autenticado (cookie faltante)." });
+            return false;
+        }
 
-        // 5) llamar a la API real
-        var resp = await api.PostAsJsonAsync("Productos/ObtenerProductos", body, ct);
+        // 2) store
+        if (!_store.TryGet(sid, out session))
+        {
+            error = Unauthorized(new { message = "No autenticado (sesión inválida o vencida)." });
+            return false;
+        }
 
-        // 6) leer respuesta como texto para devolver “tal cual”
-        var raw = await resp.Content.ReadAsStringAsync(ct);
+        // 3) IdUsuario es obligatorio porque tu API real lo valida con ValidateUserAsync
+        if (string.IsNullOrWhiteSpace(session.IdUsuario))
+        {
+            error = Unauthorized(new { message = "Sesión sin IdUsuario. Revisá que el login lo esté guardando." });
+            return false;
+        }
 
-        // 7) si la API real falló, devolvemos el mismo status + el body
-        if (!resp.IsSuccessStatusCode)
-            return StatusCode((int)resp.StatusCode, TryJson(raw));
-
-        // 8) OK: devolvemos exactamente el JSON que arma la API real:
-        // {
-        //   Paginacion: {...},
-        //   Productos: [...],
-        //   filtrosAdic: {...}
-        // }
-        return Content(raw, "application/json");
+        error = null;
+        return true;
     }
 
     // ==========================================================
-    // (Opcional) GET /productos/pagina
-    // Si querés paginar desde el front (sin “filtros” de rubro/categorías),
-    // podés usar este endpoint.
+    // Helper: crear HttpClient hacia API real + Bearer token
     // ==========================================================
-    [HttpGet("pagina")]
-    public async Task<IActionResult> ObtenerPaginado(
+    private HttpClient BuildApiClient(SessionInfo session)
+    {
+        var api = _httpClientFactory.CreateClient("ApiReal");
+        api.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", session.AccessToken);
+
+        return api;
+    }
+
+    // ==========================================================
+    // ✅ GET /productos/obtener
+    // Mantiene compatibilidad con tu axios actual:
+    //
+    // API.get("/productos/obtener", { params: { texto, disponible, ofertas, pageNumber, pageSize } })
+    //
+    // Internamente llama:
+    // POST API REAL  Productos/ObtenerProductos
+    // con body compatible con ObtenerProductosWebParam:
+    // {
+    //   IdUsuario, TextoBuscador, SoloDisponible, SoloOfertas,
+    //   FiltrosProductos: { PageNumber, PageSize }
+    // }
+    // ==========================================================
+    [HttpGet("obtener")]
+    public async Task<IActionResult> Obtener(
+        [FromQuery] string texto = "",
+        [FromQuery] bool disponible = false,
+        [FromQuery] bool ofertas = false,
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 50,
         CancellationToken ct = default)
     {
+        // 1) validar sesión del BFF
         if (!TryGetSession(out var session, out var err)) return err!;
-        if (string.IsNullOrWhiteSpace(session.IdUsuario))
-            return Unauthorized(new { message = "Sesión sin IdUsuario. Revisá login." });
 
+        // 2) HttpClient hacia API real con Bearer token
         var api = BuildApiClient(session);
 
-        var body = new ObtenerProductosWebParamDto
+        // 3) armar body tal como espera tu API real (sin clases/DTOs)
+        // OJO: tu API real si PageSize==0 trae TODO (lo reemplaza por nMaxFilas)
+        var body = new
         {
-            IdUsuario = session.IdUsuario!,
-            TextoBuscador = "",
-            SoloDisponible = false,
-            SoloOfertas = false,
-            FiltrosProductos = new FiltrosProductosDto
+            IdUsuario = session.IdUsuario,
+            TextoBuscador = texto ?? "",
+            SoloDisponible = disponible,
+            SoloOfertas = ofertas,
+            FiltrosProductos = new
             {
                 PageNumber = pageNumber < 1 ? 1 : pageNumber,
                 PageSize = pageSize < 0 ? 50 : pageSize
             }
         };
 
+        // 4) llamar a la API real
         var resp = await api.PostAsJsonAsync("Productos/ObtenerProductos", body, ct);
+
+        // 5) passthrough de la respuesta
+        var raw = await resp.Content.ReadAsStringAsync(ct);
+
+        if (!resp.IsSuccessStatusCode)
+            return StatusCode((int)resp.StatusCode, TryJson(raw));
+
+        // Devuelve el JSON real:
+        // { Paginacion: {...}, Productos: [...], filtrosAdic: {...} }
+        return Content(raw, "application/json");
+    }
+
+    // ==========================================================
+    // ✅ GET /productos/listas-filtros
+    // Tu axios actual llama: API.get("/productos/listas-filtros")
+    //
+    // Internamente llama:
+    // GET API REAL Productos/ObtenerListasFiltros
+    // ==========================================================
+    [HttpGet("listas-filtros")]
+    public async Task<IActionResult> ListasFiltros(CancellationToken ct)
+    {
+        if (!TryGetSession(out var session, out var err)) return err!;
+        var api = BuildApiClient(session);
+
+        var resp = await api.GetAsync("Productos/ObtenerListasFiltros", ct);
+        var raw = await resp.Content.ReadAsStringAsync(ct);
+
+        if (!resp.IsSuccessStatusCode)
+            return StatusCode((int)resp.StatusCode, TryJson(raw));
+
+        return Content(raw, "application/json");
+    }
+
+    // ==========================================================
+    // ✅ GET /productos/banner
+    // Tu axios actual llama: API.get("/productos/banner")
+    //
+    // Internamente llama:
+    // GET API REAL Productos/ObtenerBannerInfo
+    // ==========================================================
+    [HttpGet("banner")]
+    public async Task<IActionResult> Banner(CancellationToken ct)
+    {
+        if (!TryGetSession(out var session, out var err)) return err!;
+        var api = BuildApiClient(session);
+
+        var resp = await api.GetAsync("Productos/ObtenerBannerInfo", ct);
         var raw = await resp.Content.ReadAsStringAsync(ct);
 
         if (!resp.IsSuccessStatusCode)

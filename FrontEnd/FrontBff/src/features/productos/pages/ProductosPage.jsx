@@ -1,8 +1,12 @@
 // src/features/productos/pages/ProductosPage.jsx
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import { getProductos } from "../../../services/ProductoServices";
 
-// helper para agarrar campos sin saber el nombre exacto
+import BotonVolver from "../../../shared/components/ui/BotonVolver";
+import DataTable from "../../../shared/components/ui/DataTable";
+
 const pick = (obj, keys, fallback = "") => {
   for (const k of keys) {
     const v = obj?.[k];
@@ -11,92 +15,196 @@ const pick = (obj, keys, fallback = "") => {
   return fallback;
 };
 
-export default function ProductosPage() {
-  const [data, setData] = useState(null);     // { Paginacion, Productos, filtrosAdic }
+const formatARS = (value) => {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return "-";
+  return new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS" }).format(n);
+};
+
+function ProductosPage() {
+  const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
-  useEffect(() => {
-    let alive = true;
+  // filtros simples (cliente) para toolbar derecha
+  const [soloDisponibles, setSoloDisponibles] = useState(false);
+  const [soloOfertas, setSoloOfertas] = useState(false);
 
-    (async () => {
-      setLoading(true);
-      setError("");
-      try {
-        // ✅ TRAER TODO: pageSize = 0 (tu API real lo transforma a nMaxFilas)
-        const res = await getProductos({ pageNumber: 1, pageSize: 0 });
-        if (!alive) return;
-        setData(res);
-      } catch (e) {
-        if (!alive) return;
-        console.error(e);
-        setError("No se pudieron cargar los productos.");
-      } finally {
-        if (alive) setLoading(false);
-      }
-    })();
+  const navigate = useNavigate();
 
-    return () => {
-      alive = false;
-    };
-  }, []);
-
-  const productos = useMemo(
-    () => (Array.isArray(data?.Productos) ? data.Productos : []),
-    [data]
+  const columns = useMemo(
+    () => [
+      {
+        id: "codigo",
+        header: "Código",
+        accessorFn: (row) => pick(row, ["Codigo", "CodArticulo", "Id", "SKU", "Cod"], ""),
+        cell: (info) => info.getValue() || "-",
+        meta: { label: "Código" },
+      },
+      {
+        id: "descripcion",
+        header: "Descripción",
+        accessorFn: (row) => pick(row, ["Descripcion", "Nombre", "Producto", "Desc"], ""),
+        cell: (info) => info.getValue() || "(sin nombre)",
+        meta: { label: "Descripción" },
+      },
+      {
+        id: "rubro",
+        header: "Rubro",
+        accessorFn: (row) => pick(row, ["Rubro"], ""),
+        cell: (info) => info.getValue() || "-",
+        meta: { label: "Rubro" },
+      },
+      {
+        id: "subrubro",
+        header: "SubRubro",
+        accessorFn: (row) => pick(row, ["SubRubro"], ""),
+        cell: (info) => info.getValue() || "-",
+        meta: { label: "SubRubro" },
+      },
+      {
+        id: "marca",
+        header: "Marca",
+        accessorFn: (row) => pick(row, ["Marca"], ""),
+        cell: (info) => info.getValue() || "-",
+        meta: { label: "Marca" },
+      },
+      {
+        id: "precio",
+        header: "Precio",
+        accessorFn: (row) => Number(row?.PrecioFinal ?? row?.PrecioLista ?? row?.Precio ?? 0),
+        cell: (info) => formatARS(info.getValue()),
+        meta: { className: "text-right", label: "Precio" },
+      },
+      {
+        id: "stock",
+        header: "Stock",
+        accessorFn: (row) => Number(row?.Stock ?? 0),
+        cell: (info) => String(info.getValue() ?? 0),
+        meta: { className: "text-right", label: "Stock" },
+      },
+      {
+        id: "accion",
+        header: "Acción",
+        cell: ({ row }) => (
+          <button
+            type="button"
+            onClick={() => {
+              const p = row.original;
+              const codigo = pick(p, ["Codigo", "CodArticulo", "Id", "SKU"], "");
+              const nombre = pick(p, ["Descripcion", "Nombre"], "Producto");
+              alert(`(Mock) Agregado al carrito: ${codigo ? `${codigo} - ` : ""}${nombre}`);
+            }}
+          >
+            Agregar
+          </button>
+        ),
+        meta: { label: "Acción" },
+      },
+    ],
+    []
   );
 
-  if (loading) return <div style={{ padding: 16 }}>Cargando productos...</div>;
+  useEffect(() => {
+    async function cargar() {
+      try {
+        // Traemos TODO (así DataTable pagina y filtra solo)
+        const res = await getProductos({ pageNumber: 1, pageSize: 0 });
 
-  if (error) return <div style={{ padding: 16, color: "crimson" }}>{error}</div>;
+        const arr = Array.isArray(res?.Productos) ? res.Productos : [];
+        setProductos(arr);
+      } catch (err) {
+        console.error("Error cargando productos:", err);
+        navigate("/home", { replace: true }); // opcional, igual que tu ejemplo
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    cargar();
+  }, [navigate]);
+
+  const productosFiltrados = useMemo(() => {
+    let out = productos;
+    if (soloDisponibles) out = out.filter((p) => p?.Disponible === true);
+    if (soloOfertas) out = out.filter((p) => p?.Oferta === true);
+    return out;
+  }, [productos, soloDisponibles, soloOfertas]);
+
+  // 🔑 IMPORTANTE:
+  // Tu DataTable busca globalmente en Id/Fecha/Total.
+  // Entonces creamos esos campos para que el buscador encuentre:
+  // - Id: Código
+  // - Fecha: texto grande (descr + marca + rubro + subrubro)
+  // - Total: precio (para buscar por números también)
+  const dataTableData = useMemo(() => {
+    return productosFiltrados.map((p) => {
+      const codigo = pick(p, ["Codigo", "CodArticulo", "Id", "SKU", "Cod"], "");
+      const desc = pick(p, ["Descripcion", "Nombre", "Producto", "Desc"], "");
+      const marca = pick(p, ["Marca"], "");
+      const rubro = pick(p, ["Rubro"], "");
+      const sub = pick(p, ["SubRubro"], "");
+      const precio = Number(p?.PrecioFinal ?? p?.PrecioLista ?? p?.Precio ?? 0);
+
+      return {
+        ...p,
+        Id: codigo,
+        Fecha: `${desc} ${marca} ${rubro} ${sub}`.trim(),
+        Total: precio,
+      };
+    });
+  }, [productosFiltrados]);
+
+  if (loading) return <p className="pedidos-loading">Cargando productos...</p>;
+
+  const noHayProductos = dataTableData.length === 0;
 
   return (
-    <div style={{ padding: 16 }}>
-      <h1 style={{ marginTop: 0 }}>Productos</h1>
-
-      <div style={{ marginBottom: 12, opacity: 0.8 }}>
-        Total: <b>{data?.Paginacion?.TotalCount ?? productos.length}</b>
+    <div className="table-page-wrapper">
+      <div className="table-page-header">
+        <div className="table-page-header-left">
+          <BotonVolver visible={true} />
+          <div>
+            <h2 className="table-page-title">Productos (mock)</h2>
+            <div className="table-page-subtitle">
+              Listado de prueba para DataTable
+            </div>
+          </div>
+        </div>
       </div>
 
-      {productos.length === 0 ? (
-        <div>No hay productos.</div>
+      {noHayProductos ? (
+        <p className="pedidos-vacio">No hay productos registrados.</p>
       ) : (
-        <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr>
-                <th style={th}>Código</th>
-                <th style={th}>Nombre</th>
-                <th style={th}>Rubro</th>
-                <th style={th}>SubRubro</th>
-                <th style={th}>Precio</th>
-              </tr>
-            </thead>
-            <tbody>
-              {productos.map((p, idx) => {
-                const codigo = pick(p, ["Codigo", "CodArticulo", "Id", "Articulo", "SKU", "Cod"], "-");
-                const nombre = pick(p, ["Descripcion", "Nombre", "Producto", "Desc"], "(sin nombre)");
-                const rubro = pick(p, ["Rubro"], "-");
-                const subRubro = pick(p, ["SubRubro"], "-");
-                const precio = pick(p, ["Precio", "PrecioFinal", "Importe", "PrecioLista"], "-");
+        <DataTable
+          data={dataTableData}
+          columns={columns}
+          pageSizeDefault={10}
+          searchPlaceholder="Buscar producto (código, descripción, marca, rubro, precio)..."
+          renderToolbarRight={
+            <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+              <label style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                <input
+                  type="checkbox"
+                  checked={soloDisponibles}
+                  onChange={(e) => setSoloDisponibles(e.target.checked)}
+                />
+                Solo disponibles
+              </label>
 
-                return (
-                  <tr key={codigo !== "-" ? codigo : idx}>
-                    <td style={td}>{codigo}</td>
-                    <td style={td}>{nombre}</td>
-                    <td style={td}>{rubro}</td>
-                    <td style={td}>{subRubro}</td>
-                    <td style={td}>{precio}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+              <label style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                <input
+                  type="checkbox"
+                  checked={soloOfertas}
+                  onChange={(e) => setSoloOfertas(e.target.checked)}
+                />
+                Solo ofertas
+              </label>
+            </div>
+          }
+        />
       )}
     </div>
   );
 }
 
-const th = { textAlign: "left", borderBottom: "1px solid #ddd", padding: 8, whiteSpace: "nowrap" };
-const td = { borderBottom: "1px solid #eee", padding: 8, verticalAlign: "top" };
+export default ProductosPage;

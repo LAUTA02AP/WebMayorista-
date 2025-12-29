@@ -37,8 +37,8 @@
   },
   {
     "ContainingType": "Bff.Controllers.ProductosController",
-    "Method": "ObtenerTodos",
-    "RelativePath": "productos",
+    "Method": "Banner",
+    "RelativePath": "productos/banner",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -47,12 +47,37 @@
   },
   {
     "ContainingType": "Bff.Controllers.ProductosController",
-    "Method": "ObtenerPaginado",
-    "RelativePath": "productos/pagina",
+    "Method": "ListasFiltros",
+    "RelativePath": "productos/listas-filtros",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Bff.Controllers.ProductosController",
+    "Method": "Obtener",
+    "RelativePath": "productos/obtener",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
+      {
+        "Name": "texto",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "disponible",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "ofertas",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
       {
         "Name": "pageNumber",
         "Type": "System.Int32",
