@@ -34,7 +34,7 @@ function Sidebar() {
 
   return (
     <>
-      {/* Botón mobile */}
+      {/* Botón mobile: abre/cierra el popover en mobile */}
       <button
         type="button"
         className="mobile-menu-btn"
@@ -50,7 +50,11 @@ function Sidebar() {
         </svg>
       </button>
 
-      <nav className={`modern-nav ${isMobileOpen ? "mobile-open" : ""}`} aria-label="Menú lateral">
+      {/* header del menu */}
+      <nav
+        className={`modern-nav ${isMobileOpen ? "mobile-open" : ""}`}
+        aria-label="Menú lateral"
+      >
         <ul className="nav-list">
           {/* Header del sidebar */}
           <li className="nav-header">
@@ -59,33 +63,51 @@ function Sidebar() {
           </li>
 
           {/* Menú por rol */}
-          {items.map((item) => (
-            <li className="nav-item" key={item.to}>
-              <NavLink
-                to={item.to}
-                className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
-                onClick={closeAll}
-              >
-                {item.label}
-              </NavLink>
-            </li>
-          ))}
+          {items.map((item) => {
+            const Icon = item.icon;
+            return (
+              <li className="nav-item" key={item.to}>
+                <NavLink
+                  to={item.to}
+                  className={({ isActive }) =>
+                    `nav-link ${isActive ? "active" : ""}`
+                  }
+                  onClick={closeAll}
+                >
+                  {Icon && <Icon size={18} className="nav-icon" />}
+                  <span className="nav-label">{item.label}</span>
+                </NavLink>
+              </li>
+            );
+          })}
 
           {/* Botones “próximamente” (opcionales) */}
           {role === "1" && (
             <>
               <li className="nav-item">
-                <button className="nav-link" onClick={(e) => e.preventDefault()} type="button">
+                <button
+                  className="nav-link"
+                  onClick={(e) => e.preventDefault()}
+                  type="button"
+                >
                   Cta Cte (próximamente)
                 </button>
               </li>
               <li className="nav-item">
-                <button className="nav-link" onClick={(e) => e.preventDefault()} type="button">
+                <button
+                  className="nav-link"
+                  onClick={(e) => e.preventDefault()}
+                  type="button"
+                >
                   Historial (desarrollo)
                 </button>
               </li>
               <li className="nav-item">
-                <button className="nav-link" onClick={(e) => e.preventDefault()} type="button">
+                <button
+                  className="nav-link"
+                  onClick={(e) => e.preventDefault()}
+                  type="button"
+                >
                   Pagar (próximamente)
                 </button>
               </li>

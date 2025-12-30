@@ -10,6 +10,9 @@ import HomePage from "../../features/cliente/pages/HomePage.jsx";
 import PedidosPageCliente from "../../features/cliente/pages/PedidosPage.jsx";
 import ProductosPage from "../../features/productos/pages/ProductosPage.jsx";
 
+// ✅ NUEVO: página de carrito
+import CartPage from "../../features/cart/pages/CartPage.jsx";
+
 import { ThemeProvider } from "../providers/ThemeProvider";
 
 export default function AppRouter() {
@@ -29,9 +32,10 @@ export default function AppRouter() {
         >
           <Route path="/home" element={<HomePage />} />
           <Route path="/pedidos" element={<PedidosPageCliente />} />
-
-          {/* ✅ NUEVA RUTA */}
           <Route path="/productos" element={<ProductosPage />} />
+
+          {/* ✅ NUEVA RUTA CARRITO */}
+          <Route path="/cart" element={<CartPage />} />
         </Route>
       </Route>
 

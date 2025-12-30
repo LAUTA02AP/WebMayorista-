@@ -19,7 +19,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /* ✅ En lugar de hardcodear colores, usamos variables
+  /* En lugar de hardcodear colores, usamos variables
      que cambian según el tema */
   background-color: var(--bg-page);
   color: var(--text-dark);

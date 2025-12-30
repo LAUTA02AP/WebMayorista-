@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { getPedidosSimulados } from "../../../services/Services";
 
 import BotonVolver from "../../../shared/components/ui/BotonVolver";
-import BotonDescargar from "../../../shared/components/ui/BotonDescarga";
+import BotonDescargar from "../../../shared/components/ui/BotonDescargar";
 import DataTable from "../../../shared/components/ui/DataTable";
 
 function PedidosPageCliente() {
@@ -50,7 +50,6 @@ function PedidosPageCliente() {
         setPedidos(Array.isArray(pedidosData) ? pedidosData : []);
       } catch (err) {
         console.error("Error cargando pedidos simulados:", err);
-        // si algo raro pasa, volvemos al home (opcional)
         navigate("/home", { replace: true });
       } finally {
         setLoading(false);
@@ -86,7 +85,14 @@ function PedidosPageCliente() {
           columns={columns}
           pageSizeDefault={10}
           searchPlaceholder="Buscar pedido (ID, fecha, total)..."
-          renderToolbarRight={<BotonDescargar label="Descargar" />}
+          renderToolbarRight={
+            <BotonDescargar
+              label="Descargar"
+              data={pedidos}
+              nombreArchivo="Pedidos"
+              nombreHoja="Pedidos"
+            />
+          }
         />
       )}
     </div>

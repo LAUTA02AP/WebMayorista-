@@ -7,6 +7,9 @@ import { getProductos } from "../../../services/ProductoServices";
 import BotonVolver from "../../../shared/components/ui/BotonVolver";
 import DataTable from "../../../shared/components/ui/DataTable";
 
+// ✅ Hook del carrito
+import { useCart } from "../../cart/hooks/useCart";
+
 const pick = (obj, keys, fallback = "") => {
   for (const k of keys) {
     const v = obj?.[k];
@@ -30,6 +33,9 @@ function ProductosPage() {
   const [soloOfertas, setSoloOfertas] = useState(false);
 
   const navigate = useNavigate();
+
+  // ✅ carrito
+  const { addToCart, items } = useCart();
 
   const columns = useMemo(
     () => [
@@ -85,23 +91,43 @@ function ProductosPage() {
       {
         id: "accion",
         header: "Acción",
-        cell: ({ row }) => (
-          <button
-            type="button"
-            onClick={() => {
-              const p = row.original;
-              const codigo = pick(p, ["Codigo", "CodArticulo", "Id", "SKU"], "");
-              const nombre = pick(p, ["Descripcion", "Nombre"], "Producto");
-              alert(`(Mock) Agregado al carrito: ${codigo ? `${codigo} - ` : ""}${nombre}`);
-            }}
-          >
-            Agregar
-          </button>
-        ),
+        cell: ({ row }) => {
+          const p = row.original;
+
+          const id = pick(p, ["Codigo", "CodArticulo", "Id", "SKU", "Cod"], "");
+          const nombre = pick(p, ["Descripcion", "Nombre", "Producto", "Desc"], "Producto");
+          const stock = Number(p?.Stock ?? 0);
+          const precio = Number(p?.PrecioFinal ?? p?.PrecioLista ?? p?.Precio ?? 0);
+
+          const inCart = items.find((x) => x.id === id);
+          const reachedMax = inCart ? inCart.qty >= stock : false;
+
+          const disabled = !id || stock <= 0 || reachedMax;
+
+          return (
+            <button
+              type="button"
+              disabled={disabled}
+              onClick={() => {
+                addToCart(
+                  {
+                    id,
+                    nombre,
+                    precio,
+                    stock,
+                  },
+                  1
+                );
+              }}
+            >
+              {stock <= 0 ? "Sin stock" : reachedMax ? "Máximo" : "Agregar"}
+            </button>
+          );
+        },
         meta: { label: "Acción" },
       },
     ],
-    []
+    [addToCart, items]
   );
 
   useEffect(() => {
@@ -114,7 +140,7 @@ function ProductosPage() {
         setProductos(arr);
       } catch (err) {
         console.error("Error cargando productos:", err);
-        navigate("/home", { replace: true }); // opcional, igual que tu ejemplo
+        navigate("/home", { replace: true });
       } finally {
         setLoading(false);
       }
@@ -132,10 +158,6 @@ function ProductosPage() {
 
   // 🔑 IMPORTANTE:
   // Tu DataTable busca globalmente en Id/Fecha/Total.
-  // Entonces creamos esos campos para que el buscador encuentre:
-  // - Id: Código
-  // - Fecha: texto grande (descr + marca + rubro + subrubro)
-  // - Total: precio (para buscar por números también)
   const dataTableData = useMemo(() => {
     return productosFiltrados.map((p) => {
       const codigo = pick(p, ["Codigo", "CodArticulo", "Id", "SKU", "Cod"], "");
@@ -165,9 +187,7 @@ function ProductosPage() {
           <BotonVolver visible={true} />
           <div>
             <h2 className="table-page-title">Productos (mock)</h2>
-            <div className="table-page-subtitle">
-              Listado de prueba para DataTable
-            </div>
+            <div className="table-page-subtitle">Listado de prueba para DataTable</div>
           </div>
         </div>
       </div>
