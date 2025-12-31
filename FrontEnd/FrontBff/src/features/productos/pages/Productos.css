@@ -1,0 +1,164 @@
+/* src/features/productos/pages/Productos.css */
+
+.producto-accion-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Botón base */
+.producto-accion-btn {
+  appearance: none;
+  border: 2px solid var(--primary-blue);
+  border-radius: 10px;
+  padding: 10px 12px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.08s ease,
+    box-shadow 0.2s ease, opacity 0.2s ease;
+
+  min-width: 120px;
+}
+
+/* Agregar (azul) */
+.producto-accion-btn.is-add {
+  background-color: var(--primary-blue);
+  color: var(--primary-white);
+}
+
+.producto-accion-btn.is-add:hover:not(:disabled) {
+  background-color: var(--dark-blue);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 96, 170, 0.25);
+}
+
+/* En carrito (suave, integrado al theme) */
+.producto-accion-btn.is-in-cart {
+  background-color: var(--light-blue);
+  color: var(--primary-blue);
+  border-color: rgba(0, 96, 170, 0.35);
+  box-shadow: var(--shadow-sm);
+
+  /* más compacto */
+  min-width: 0;
+  padding: 10px 10px;
+}
+
+/* Si está máximo: lo atenuamos un poco */
+.producto-accion-btn.is-in-cart.is-max {
+  opacity: 0.85;
+  border-color: var(--border-color);
+}
+
+.producto-accion-btn.is-in-cart:hover:not(:disabled) {
+  background-color: var(--bg-card);
+  border-color: var(--primary-blue);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+/* Sin stock */
+.producto-accion-btn.is-out {
+  background-color: transparent;
+  color: var(--text-gray);
+  border-color: var(--border-color);
+  box-shadow: none;
+}
+
+/* disabled */
+.producto-accion-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.producto-accion-btn:focus-visible {
+  outline: 3px solid rgba(0, 96, 170, 0.16);
+  outline-offset: 2px;
+}
+
+/* texto (Agregar / Sin stock) */
+.producto-accion-text {
+  display: inline-block;
+}
+
+/* badge cantidad (sin verde) */
+.producto-accion-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 2px 7px;
+  border-radius: 999px;
+
+  font-weight: 800;
+  font-size: 12px;
+
+  background-color: rgba(0, 96, 170, 0.12);
+  border: 1px solid rgba(0, 96, 170, 0.25);
+  color: var(--primary-blue);
+}
+
+/* Tachito */
+.producto-accion-trash-btn {
+  appearance: none;
+  border: 2px solid var(--border-color);
+  background-color: transparent;
+  color: var(--text-gray);
+
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.08s ease,
+    color 0.2s ease;
+}
+
+.producto-accion-trash-btn:hover {
+  background-color: var(--bg-card);
+  border-color: rgba(0, 96, 170, 0.35);
+  color: var(--primary-blue);
+  transform: translateY(-1px);
+}
+
+.producto-accion-trash-btn:active {
+  transform: translateY(0px);
+}
+
+.producto-accion-trash-btn:focus-visible {
+  outline: 3px solid rgba(0, 96, 170, 0.14);
+  outline-offset: 2px;
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .producto-accion-wrap {
+    width: 100%;
+  }
+
+  .producto-accion-btn {
+    flex: 1;
+    min-width: 0;
+    min-height: 40px;
+  }
+
+  .producto-accion-trash-btn {
+    width: 40px;
+    height: 40px;
+  }
+}

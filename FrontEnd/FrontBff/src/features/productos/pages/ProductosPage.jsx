@@ -1,11 +1,13 @@
 // src/features/productos/pages/ProductosPage.jsx
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { ShoppingCart, Trash2 } from "lucide-react";
 
 import { getProductos } from "../../../services/ProductoServices";
 
-import BotonVolver from "../../../shared/components/ui/BotonVolver";
 import DataTable from "../../../shared/components/ui/DataTable";
+
+import "./Productos.css";
 
 // ✅ Hook del carrito
 import { useCart } from "../../cart/hooks/useCart";
@@ -34,8 +36,32 @@ function ProductosPage() {
 
   const navigate = useNavigate();
 
-  // ✅ carrito
-  const { addToCart, items } = useCart();
+  // ✅ carrito (tu useCart solo retorna el contexto)
+  // El provider puede exponer distintas funciones; por eso hacemos fallback.
+  const cart = useCart();
+  const { addToCart, items } = cart;
+
+  // ✅ remover: intenta varias funciones comunes, y si existe dispatch, usa REMOVE (tu reducer)
+  const removeLineItem = useCallback(
+    (id) => {
+      if (!id) return;
+
+      if (typeof cart.removeFromCart === "function") return cart.removeFromCart(id);
+      if (typeof cart.removeItem === "function") return cart.removeItem(id);
+      if (typeof cart.remove === "function") return cart.remove(id);
+      if (typeof cart.deleteItem === "function") return cart.deleteItem(id);
+
+      // fallback directo a reducer si tu provider expone dispatch
+      if (typeof cart.dispatch === "function") {
+        return cart.dispatch({ type: "REMOVE", payload: { id } });
+      }
+
+      console.warn(
+        "No encontré función para eliminar en CartProvider. Agregá removeFromCart/removeItem/remove o expone dispatch."
+      );
+    },
+    [cart]
+  );
 
   const columns = useMemo(
     () => [
@@ -102,40 +128,81 @@ function ProductosPage() {
           const inCart = items.find((x) => x.id === id);
           const reachedMax = inCart ? inCart.qty >= stock : false;
 
-          const disabled = !id || stock <= 0 || reachedMax;
+          // sumar 1 solo si se puede
+          const canAdd = !!id && stock > 0 && !reachedMax;
+
+          // estados visuales
+          let stateClass = "is-add";
+          let titleText = "Agregar al carrito";
+
+          if (inCart && reachedMax) {
+            stateClass = "is-in-cart is-max";
+            titleText = `En carrito (${inCart.qty}) - Máximo`;
+          } else if (inCart) {
+            stateClass = "is-in-cart";
+            titleText = `En carrito (${inCart.qty})`;
+          } else if (stock <= 0) {
+            stateClass = "is-out";
+            titleText = "Sin stock";
+          }
 
           return (
-            <button
-              type="button"
-              disabled={disabled}
-              onClick={() => {
-                addToCart(
-                  {
-                    id,
-                    nombre,
-                    precio,
-                    stock,
-                  },
-                  1
-                );
-              }}
-            >
-              {stock <= 0 ? "Sin stock" : reachedMax ? "Máximo" : "Agregar"}
-            </button>
+            <div className="producto-accion-wrap">
+              {/* Botón principal */}
+              <button
+                type="button"
+                className={`producto-accion-btn ${stateClass}`}
+                disabled={!canAdd}
+                title={titleText}
+                aria-label={inCart ? `Producto en carrito. Cantidad ${inCart.qty}` : "Agregar al carrito"}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  addToCart({ id, nombre, precio, stock }, 1);
+                }}
+              >
+                {/* Si está en carrito: SOLO icono + badge */}
+                {inCart ? (
+                  <>
+                    <ShoppingCart size={18} aria-hidden="true" />
+                    <span className="producto-accion-badge" title="Cantidad en carrito">
+                      {inCart.qty}
+                    </span>
+                  </>
+                ) : (
+                  <span className="producto-accion-text">
+                    {stock <= 0 ? "Sin stock" : "Agregar"}
+                  </span>
+                )}
+              </button>
+
+              {/* Tachito: solo si está en carrito */}
+              {inCart ? (
+                <button
+                  type="button"
+                  className="producto-accion-trash-btn"
+                  title="Quitar del carrito"
+                  aria-label="Quitar del carrito"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeLineItem(id);
+                  }}
+                >
+                  <Trash2 size={18} aria-hidden="true" />
+                </button>
+              ) : null}
+            </div>
           );
         },
         meta: { label: "Acción" },
       },
     ],
-    [addToCart, items]
+    [addToCart, items, removeLineItem]
   );
 
   useEffect(() => {
     async function cargar() {
       try {
-        // Traemos TODO (así DataTable pagina y filtra solo)
         const res = await getProductos({ pageNumber: 1, pageSize: 0 });
-
         const arr = Array.isArray(res?.Productos) ? res.Productos : [];
         setProductos(arr);
       } catch (err) {
@@ -156,8 +223,7 @@ function ProductosPage() {
     return out;
   }, [productos, soloDisponibles, soloOfertas]);
 
-  // 🔑 IMPORTANTE:
-  // Tu DataTable busca globalmente en Id/Fecha/Total.
+  // DataTable busca globalmente en Id/Fecha/Total.
   const dataTableData = useMemo(() => {
     return productosFiltrados.map((p) => {
       const codigo = pick(p, ["Codigo", "CodArticulo", "Id", "SKU", "Cod"], "");
@@ -184,7 +250,6 @@ function ProductosPage() {
     <div className="table-page-wrapper">
       <div className="table-page-header">
         <div className="table-page-header-left">
-          <BotonVolver visible={true} />
           <div>
             <h2 className="table-page-title">Productos (mock)</h2>
             <div className="table-page-subtitle">Listado de prueba para DataTable</div>

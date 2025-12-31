@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 
 import { getPedidosSimulados } from "../../../services/Services";
 
-import BotonVolver from "../../../shared/components/ui/BotonVolver";
 import BotonDescargar from "../../../shared/components/ui/BotonDescargar";
 import DataTable from "../../../shared/components/ui/DataTable";
 
@@ -67,7 +66,6 @@ function PedidosPageCliente() {
     <div className="table-page-wrapper">
       <div className="table-page-header">
         <div className="table-page-header-left">
-          <BotonVolver visible={true} />
           <div>
             <h2 className="table-page-title">Pedidos (simulado)</h2>
             <div className="table-page-subtitle">
