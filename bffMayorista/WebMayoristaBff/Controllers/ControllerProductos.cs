@@ -80,7 +80,7 @@ public class ProductosController : ControllerBase
     }
 
     // ==========================================================
-    // ✅ GET /productos/obtener
+    // GET /productos/obtener
     // Mantiene compatibilidad con tu axios actual:
     //
     // API.get("/productos/obtener", { params: { texto, disponible, ofertas, pageNumber, pageSize } })
@@ -138,7 +138,7 @@ public class ProductosController : ControllerBase
     }
 
     // ==========================================================
-    // ✅ GET /productos/listas-filtros
+    // GET /productos/listas-filtros
     // Tu axios actual llama: API.get("/productos/listas-filtros")
     //
     // Internamente llama:

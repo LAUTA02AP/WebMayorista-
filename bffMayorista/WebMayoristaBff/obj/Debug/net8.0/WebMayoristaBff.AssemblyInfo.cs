@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("WebMayoristaBff")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a388b24ad1c0003f106966710dd4a50906ee95e4")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fb55f7f76d080e0c823314e0a4fd9344f8bc6ce6")]
 [assembly: System.Reflection.AssemblyProductAttribute("WebMayoristaBff")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WebMayoristaBff")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

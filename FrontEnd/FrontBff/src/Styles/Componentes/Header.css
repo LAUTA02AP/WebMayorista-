@@ -16,6 +16,9 @@
   height: var(--header-height);
   z-index: 900;
 
+  /* ✅ para que acompañe la animación del sidebar */
+  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
   /* Menos blanco, más “dashboard” */
   background: linear-gradient(90deg, var(--light-blue) 0%, var(--bg-card) 55%);
 
@@ -28,6 +31,11 @@
   gap: 16px;
 
   padding: 0 20px;
+}
+
+/* ✅ Cuando el sidebar está colapsado (Sidebar.jsx agrega la clase al BODY) */
+.sidebar-collapsed .app-header {
+  left: var(--sidebar-width-collapsed);
 }
 
 /* IZQUIERDA */
@@ -48,7 +56,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: calc(100vw - 80px); /* deja lugar al boton del navbar*/
-
 }
 
 /* DERECHA */
@@ -130,8 +137,6 @@
     min-width: 0;
     justify-self: center;
     text-align: center;
-
-    
   }
 
   .app-header-left .app-header-brand {

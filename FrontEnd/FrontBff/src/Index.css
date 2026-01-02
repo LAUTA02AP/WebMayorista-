@@ -1,4 +1,8 @@
-
+/* ==========================================
+   1) RESET Y BOX-SIZING
+   - Quitamos márgenes/padding por defecto
+   - box-sizing: border-box para que el padding no rompa el ancho
+   ========================================== */
 * {
   margin: 0;
   padding: 0;
@@ -7,11 +11,9 @@
 
 /* ==========================================
    2) ESTILOS BASE DEL DOCUMENTO (BODY)
-   ------------------------------------------
-   - Tipografía y suavizado
-   - IMPORTANTE: para que el dark mode funcione,
-     el body NO debe tener colores fijos,
-     debe usar variables (var(--...)).
+   - Fuente general
+   - Suavizado
+   - Colores por variables (soporta dark mode)
    ========================================== */
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
@@ -19,83 +21,72 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /* En lugar de hardcodear colores, usamos variables
-     que cambian según el tema */
   background-color: var(--bg-page);
   color: var(--text-dark);
 }
 
+/* (Opcional recomendado) altura completa para layouts flex */
+html,
+body {
+  height: 100%;
+}
+
 /* ==========================================
    3) VARIABLES CSS (TEMA CLARO = DEFAULT)
-   ------------------------------------------
-   - :root es el "documento" (HTML)
-   - Acá declarás el set de colores y medidas
-   - Estas variables se usan en TODO el CSS:
-     sidebar, header, cards, botones, forms, etc.
-   - Este bloque corresponde al "LIGHT MODE"
+   - Este bloque define el "tema claro"
+   - El dark mode pisa variables en el bloque :root[data-theme="dark"]
    ========================================== */
 :root {
-  /* --- Colores principales de marca/acentos --- */
-  --primary-green: #c8f72a;
+  /* --- Colores principales --- */
   --primary-white: #fbfdfd;
   --primary-blue: #0060aa;
   --dark-blue: #004580;
   --light-blue: #e8f4fe;
+  --primary-green: #c8f72a;
 
-  /* --- Colores de fondo (página y tarjetas) --- */
-  --bg-page: #f5f7fa; /* fondo general (body / main) */
-  --bg-card: #fbfdfd; /* fondo de cards, inputs, paneles */
+  /* --- Colores de fondo --- */
+  --bg-page: #f5f7fa;
+  --bg-card: #fbfdfd;
 
   /* --- Colores de texto --- */
-  --text-dark: #1a1a1a; /* texto principal */
-  --text-gray: #6b7280; /* texto secundario */
+  --text-dark: #1a1a1a;
+  --text-gray: #6b7280;
 
   /* --- Bordes y separadores --- */
   --border-color: #e5e7eb;
 
-  /* --- Sombras (elevación visual) --- */
+  /* --- Sombras --- */
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.1);
 
   /* --- Layout (medidas globales) --- */
-  --sidebar-width: 190px; /* ancho del sidebar */
-  --header-height: 69px;  /* altura del header */
+  --sidebar-width: 240px;              /* Expandido */
+  --sidebar-width-collapsed: 70px;     /* Colapsado */
+  --header-height: 69px;
 }
 
 /* ==========================================
    4) VARIABLES PARA DARK MODE
-   ------------------------------------------
-   - ESTE ES EL BLOQUE DEL MODO OSCURO
-   - Se activa cuando JS pone:
-     document.documentElement.setAttribute("data-theme", "dark")
-   - NO aplica estilos directos.
-     Solo cambia variables.
-   - Para que funcione, tus componentes deben usar
-     var(--bg-page), var(--text-dark), etc.
+   - Se activan cuando tu app pone:
+     document.documentElement.dataset.theme = "dark"
+     o en HTML: <html data-theme="dark">
    ========================================== */
 :root[data-theme="dark"] {
-  /* --- Fondos --- */
-  --bg-page: #0b1220; /* fondo general */
-  --bg-card: #0f172a; /* cards / paneles */
+  --bg-page: #0b1220;
+  --bg-card: #0f172a;
 
-  /* --- Textos --- */
-  --text-dark: #e9ebe5; /* texto principal (claro) */
-  --text-gray: #94a3b8; /* texto secundario */
+  --text-dark: #e9ebe5;
+  --text-gray: #94a3b8;
 
-  /* --- Bordes --- */
   --border-color: #22304a;
 
-  /* --- Ajustes de acentos (azules más claros) --- */
   --primary-blue: #60a5fa;
   --dark-blue: #3b82f6;
   --light-blue: #0b223f;
 
-  /* --- Otros colores de marca --- */
-  --primary-white: #f8fafc; /* usado como texto claro en botones */
-  --primary-green: #c8f72a; /* lo mantenés igual (marca) aparece en la home letra  */
+  --primary-white: #f8fafc;
 
-  /* --- Sombras (más fuertes en dark para profundidad) --- */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
   --shadow-md: 0 10px 24px rgba(0, 0, 0, 0.40);
   --shadow-lg: 0 18px 50px rgba(0, 0, 0, 0.45);
@@ -103,39 +94,42 @@ body {
 
 /* ==========================================
    5) LAYOUT PARA PÁGINAS CON SIDEBAR
-   ------------------------------------------
-   - Estructura base (flex)
-   - Importante: el fondo del contenido usa --bg-page,
-     así cambia con el tema.
+   - .app-with-sidebar: contenedor general (sidebar + main)
+   - .main-content-with-sidebar: contenido que se corre con margin-left
    ========================================== */
 
-/* Contenedor padre cuando hay sidebar */
 .app-with-sidebar {
   display: flex;
   min-height: 100vh;
 }
 
-/* Contenido principal, empujado por el sidebar */
+/* Contenido con sidebar expandido (default) */
 .main-content-with-sidebar {
   margin-left: var(--sidebar-width);
   flex: 1;
   min-height: 100vh;
 
-  /* Cambia según tema */
   background-color: var(--bg-page);
 
   display: flex;
   flex-direction: column;
 
-  /* Reservás espacio para el header arriba */
   padding-top: 2rem;
-
-  /* Importante en layouts flex para evitar overflow */
   min-width: 0;
 
+  /* Animación suave cuando cambia el margen */
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Páginas sin sidebar (login, etc.) */
+/* ✅ Cuando el sidebar está colapsado
+   IMPORTANTE:
+   Sidebar.jsx agrega la clase "sidebar-collapsed" al BODY.
+   Entonces esta regla se activa automáticamente. */
+.sidebar-collapsed .main-content-with-sidebar {
+  margin-left: var(--sidebar-width-collapsed);
+}
+
+/* ✅ Layout para páginas sin sidebar */
 .page-without-sidebar {
   margin-left: 0 !important;
   width: 100%;
@@ -143,38 +137,29 @@ body {
   background-color: var(--bg-page);
 }
 
-/* Padding real del contenido dentro del main */
+/* Padding general de contenido */
 .app-content {
   padding: 24px;
-
-  /* espacio extra para que no quede pegado al header */
   padding-top: 80px;
-
   min-width: 0;
 }
 
 /* ==========================================
    6) COMPONENTES REUTILIZABLES
-   ------------------------------------------
-   - Todos estos componentes ya usan variables:
-     por eso cambian automáticamente con dark mode.
    ========================================== */
 
-/* Cards */
 .card {
-  background-color: var(--bg-card);      /* cambia con tema */
+  background-color: var(--bg-card);
   border-radius: 12px;
   padding: 24px;
-  box-shadow: var(--shadow-md);          /* cambia con tema */
-  border: 2px solid var(--border-color); /* cambia con tema */
+  box-shadow: var(--shadow-md);
+  border: 2px solid var(--border-color);
   transition: all 0.3s ease;
 }
 
 .card:hover {
   box-shadow: var(--shadow-lg);
   transform: translateY(-4px);
-
-  /* el hover resalta con verde (marca) */
   border-color: var(--primary-green);
 }
 
@@ -193,33 +178,28 @@ body {
   text-decoration: none;
 }
 
-/* Botón principal (azul) */
 .btn-primary {
-  background-color: var(--primary-blue);  /* cambia en dark */
-  color: var(--primary-white);            /* cambia en dark */
+  background-color: var(--primary-blue);
+  color: var(--primary-white);
 }
 
 .btn-primary:hover {
-  background-color: var(--dark-blue);     /* cambia en dark */
+  background-color: var(--dark-blue);
   transform: translateY(-2px);
-
-  /* sombra puntual (no usa variable, pero está ok) */
   box-shadow: 0 4px 12px rgba(0, 96, 170, 0.3);
 }
 
-/* Botón secundario (verde) */
 .btn-secondary {
   background-color: var(--primary-green);
   color: var(--primary-blue);
 }
 
 .btn-secondary:hover {
-  background-color: #b5e615; /* verde más oscuro fijo */
+  background-color: #b5e615;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(200, 247, 42, 0.3);
 }
 
-/* Botón outline */
 .btn-outline {
   background-color: transparent;
   border: 2px solid var(--primary-blue);
@@ -240,8 +220,6 @@ body {
   display: block;
   margin-bottom: 8px;
   font-weight: 600;
-
-  /* texto principal cambia con tema */
   color: var(--text-dark);
   font-size: 14px;
 }
@@ -249,21 +227,16 @@ body {
 .form-input {
   width: 100%;
   padding: 12px 16px;
-
-  /* borde y fondo cambian con tema */
   border: 2px solid var(--border-color);
   border-radius: 10px;
   font-size: 15px;
   transition: all 0.2s ease;
-
   background-color: var(--bg-card);
-  color: var(--text-dark); /* ✅ recomendable agregarlo */
+  color: var(--text-dark);
 }
 
 .form-input:focus {
   outline: none;
-
-  /* el color del foco sigue el azul del tema */
   border-color: var(--primary-blue);
   box-shadow: 0 0 0 3px rgba(0, 96, 170, 0.1);
 }
@@ -292,16 +265,11 @@ body {
   text-align: center;
   padding: 32px;
   font-size: 16px;
-
-  /* texto secundario cambia con tema */
   color: var(--text-gray);
 }
 
 /* ==========================================
    7) UTILIDADES
-   ------------------------------------------
-   - Clases pequeñas para márgenes/paddings
-   - No dependen del tema
    ========================================== */
 .text-center { text-align: center; }
 
@@ -322,19 +290,21 @@ body {
 
 /* ==========================================
    8) RESPONSIVE (MOBILE)
-   ------------------------------------------
-   - Ajustes para pantallas <= 768px
-   - "anula" el sidebar usando variables
-   - No es dark mode: es responsive layout
+   - En mobile el sidebar se maneja como overlay/drawer,
+     por eso margin-left debe ser 0 siempre.
    ========================================== */
 @media (max-width: 768px) {
-  /* Cambiás las "medidas globales" para mobile */
   :root {
-    --sidebar-width: 0px;   /* sidebar no ocupa lugar */
-    --header-height: 96px;  /* header más alto */
+    --sidebar-width: 0px;
+    --sidebar-width-collapsed: 0px;
+    --header-height: 96px;
   }
 
   .main-content-with-sidebar {
+    margin-left: 0;
+  }
+
+  .sidebar-collapsed .main-content-with-sidebar {
     margin-left: 0;
   }
 

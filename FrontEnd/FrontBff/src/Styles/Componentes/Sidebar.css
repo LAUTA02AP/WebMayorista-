@@ -1,84 +1,80 @@
 /* ==========================================
-   SIDEBAR / NAVBAR LATERAL (DESKTOP + MOBILE)
-   ------------------------------------------
-   Este archivo maneja:
-   1) Sidebar fijo en desktop con diseño minimalista
-   2) Menú tipo "popover" en mobile (abre/cierra)
-   3) Overlay (fondo oscuro) en mobile
-   4) Soporte completo para dark mode
-   5) Estilo corporativo limpio y profesional
+   SIDEBAR COLAPSABLE (DESKTOP + MOBILE)
+   - Tooltip real (fixed) -> no se corta
+   - Toggle colapsar afuera y centrado
+   - Mobile popover igual (no colapsa)
    ========================================== */
 
+:root {
+  --sidebar-width: 240px;
+  --sidebar-width-collapsed: 70px;
+}
+
 /* ==========================================
-   1) CONTENEDOR PRINCIPAL DEL SIDEBAR (DESKTOP)
-   ------------------------------------------
-   - Fijo a la izquierda, ocupa toda la altura
-   - Ancho fijo (190px)
-   - Diseño limpio sin sombras excesivas
+   1) CONTENEDOR PRINCIPAL
    ========================================== */
 .modern-nav {
   position: fixed;
   left: 0;
   top: 0;
 
-  /* Ancho fijo para desktop */
-  width: 190px;
-  min-width: 190px;
-
+  width: var(--sidebar-width);
+  min-width: var(--sidebar-width);
   height: 100vh;
 
-  /* ✅ Usa variables: responde a light/dark */
   background-color: var(--bg-card);
-  
-  /* Borde sutil a la derecha */
   border-right: 1px solid var(--border-color);
 
   display: flex;
   flex-direction: column;
 
-  /* Por encima del contenido normal */
   z-index: 1000;
 
-  /* Scroll interno del sidebar */
-  overflow-y: auto;
-  overflow-x: hidden;
+  /* ✅ CLAVE: NO scroll acá (para que el botón salga afuera sin recortarse) */
+  overflow: visible;
+
   padding: 0;
 
-  /* Animación suave para transiciones */
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: transform;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: width;
+}
+
+.modern-nav.collapsed {
+  width: var(--sidebar-width-collapsed);
+  min-width: var(--sidebar-width-collapsed);
 }
 
 /* ==========================================
-   2) SCROLLBAR PERSONALIZADA (WEBKIT)
-   ------------------------------------------
-   - Diseño minimalista y discreto
-   - Solo Chrome/Edge/Safari
+   2) SCROLL INTERNO (✅ ACÁ VA EL SCROLL EN DESKTOP)
    ========================================== */
-.modern-nav::-webkit-scrollbar {
-  width: 4px;
+.nav-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  /* para que el ul use flex bien y el theme/logout queden abajo */
+  display: flex;
+  flex-direction: column;
+
+  /* evita “saltos” raros al scrollear */
+  min-height: 0;
 }
 
-.modern-nav::-webkit-scrollbar-track {
-  background: transparent;
-  margin: 8px 0;
-}
-
-.modern-nav::-webkit-scrollbar-thumb {
+/* Scrollbar (desktop: sobre nav-scroll) */
+.nav-scroll::-webkit-scrollbar { width: 4px; }
+.nav-scroll::-webkit-scrollbar-track { background: transparent; margin: 8px 0; }
+.nav-scroll::-webkit-scrollbar-thumb {
   background: rgba(148, 163, 184, 0.3);
   border-radius: 10px;
   transition: background 0.2s ease;
 }
-
-.modern-nav::-webkit-scrollbar-thumb:hover {
+.nav-scroll::-webkit-scrollbar-thumb:hover {
   background: rgba(148, 163, 184, 0.5);
 }
 
 /* ==========================================
-   3) HEADER DEL SIDEBAR (LOGO + EMPRESA)
-   ------------------------------------------
-   - Branding simple con logo
-   - Borde inferior sutil
+   3) HEADER
    ========================================== */
 .nav-header {
   padding: 20px 16px 16px 16px;
@@ -89,9 +85,10 @@
   gap: 10px;
 
   margin-bottom: 8px;
+  position: relative;
 }
 
-/* Logo circular simple */
+/* Logo */
 .nav-logo-circle {
   width: 32px;
   height: 32px;
@@ -108,21 +105,69 @@
   font-size: 14px;
 
   flex-shrink: 0;
+  transition: all 0.3s ease;
 }
 
-/* Título de la empresa */
+/* Título */
 .nav-title {
   font-size: 13px;
   font-weight: 700;
   color: var(--text-dark);
   letter-spacing: 0.02em;
+
+  opacity: 1;
+  transition: opacity 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.modern-nav.collapsed .nav-title {
+  opacity: 0;
+  width: 0;
 }
 
 /* ==========================================
-   4) LISTA Y ITEMS DEL MENÚ
-   ------------------------------------------
-   - Organización vertical limpia
-   - Espaciado uniforme
+   3.1) BOTÓN COLAPSAR (AFUERA + CENTRADO)
+   ========================================== */
+.collapse-toggle-btn {
+  position: absolute;
+  right: -14px; /* afuera */
+  top: 50%;     /* centrado */
+  transform: translateY(-50%);
+
+  width: 30px;
+  height: 30px;
+
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+
+  color: var(--text-gray);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  z-index: 1500;
+
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+  transition: all 0.2s ease;
+}
+
+.collapse-toggle-btn:hover {
+  background-color: var(--primary-blue);
+  color: var(--primary-white);
+  border-color: var(--primary-blue);
+  transform: translateY(-50%) scale(1.05);
+}
+
+.collapse-toggle-btn:active {
+  transform: translateY(-50%) scale(0.96);
+}
+
+/* ==========================================
+   4) LISTA
    ========================================== */
 .nav-list {
   list-style: none;
@@ -132,27 +177,14 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+
+  min-height: 0;
 }
 
-.nav-items-left {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.nav-item {
-  margin: 0;
-  padding: 0;
-}
+.nav-item { margin: 0; padding: 0; }
 
 /* ==========================================
-   5) LINKS / BOTONES DEL MENÚ
-   ------------------------------------------
-   - Diseño corporativo limpio
-   - Hover suave con fondo redondeado
-   - Active con fondo azul redondeado
-   - Estilo minimalista profesional
+   5) LINKS
    ========================================== */
 .nav-link {
   display: flex;
@@ -163,7 +195,6 @@
   margin: 0 8px;
   border-radius: 8px;
 
-  /* ✅ Texto usa variable (dark mode friendly) */
   color: var(--text-gray);
 
   text-decoration: none;
@@ -179,235 +210,143 @@
   background: transparent;
   border: none;
   text-align: left;
+  line-height: 1;        
 }
 
-/* Hover: fondo sutil redondeado */
 .nav-link:hover {
   color: var(--text-dark);
   background-color: rgba(148, 163, 184, 0.08);
 }
 
-/* Estado activo: fondo azul redondeado completo */
 .nav-link.active {
   background-color: rgba(0, 96, 170, 0.1);
   color: var(--primary-blue);
   font-weight: 600;
 }
 
+.nav-icon { 
+  flex-shrink: 0;
+  display: block;
+}
+
+
+
+/* Label */
+.nav-label {
+  opacity: 1;
+  transition: opacity 0.2s ease;
+  white-space: nowrap;
+}
+
+.modern-nav.collapsed .nav-label {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+}
+
 /* ==========================================
-   6) CONFIGURACIÓN + SWITCH
-   ------------------------------------------
-   - Panel expandible para ajustes
-   - Switch moderno para dark mode
+   6) TOOLTIP REAL (SE DIBUJA AFUERA, fixed)
+   (Esto funciona si lo renderizás con Portal en el JSX)
    ========================================== */
-.nav-settings {
-  position: relative;
-  margin: 4px 0;
-}
-
-/* Icono de configuración */
-.gear-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-gray);
-  transition: color 0.2s ease;
-}
-
-.nav-settings:hover .gear-icon {
-  color: var(--text-dark);
-}
-
-/* Panel popover de configuración */
-.settings-popover {
-  margin: 8px 12px 8px 12px;
-  padding: 12px;
-
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-
-  background: var(--bg-page);
-}
-
-.settings-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.settings-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-dark);
-}
-
-/* Switch moderno */
-.switch {
-  display: inline-flex;
-  align-items: center;
-}
-
-.switch input {
-  display: none;
-}
-
-.switch-ui {
-  width: 44px;
-  height: 24px;
-
-  border-radius: 999px;
-  border: 1px solid var(--border-color);
-
-  background: var(--bg-card);
-  position: relative;
-
-  cursor: pointer;
-  
-  transition: all 0.25s ease;
-}
-
-/* Bolita del switch */
-.switch-ui::after {
-  content: "";
-  width: 18px;
-  height: 18px;
-
-  border-radius: 50%;
-  background: var(--text-gray);
-
-  position: absolute;
-  top: 50%;
-  left: 2px;
+.sidebar-tooltip {
+  position: fixed;
+  top: 0;
+  left: 0;
   transform: translateY(-50%);
 
-  transition: all 0.25s ease;
+  background: var(--text-dark);
+  color: var(--primary-white);
+
+  padding: 6px 10px;
+  border-radius: 6px;
+
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.20);
+  z-index: 99999;
+  pointer-events: none;
+
+  animation: tooltipFadeIn 0.12s ease;
 }
 
-/* Estado hover del switch */
-.switch-ui:hover {
-  border-color: var(--primary-blue);
+@keyframes tooltipFadeIn {
+  from { opacity: 0; transform: translateY(-50%) translateX(-4px); }
+  to   { opacity: 1; transform: translateY(-50%) translateX(0); }
 }
 
-/* Estado ON del switch */
-.switch input:checked + .switch-ui {
-  background: var(--primary-blue);
-  border-color: var(--primary-blue);
-}
-
-.switch input:checked + .switch-ui::after {
-  left: 22px;
-  background: var(--primary-white);
+:root[data-theme="dark"] .sidebar-tooltip {
+  background: var(--bg-card);
+  color: var(--text-dark);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55);
 }
 
 /* ==========================================
-   7) LOGOUT (AL FINAL DEL SIDEBAR)
-   ------------------------------------------
-   - Botón outline simple al pie del sidebar
-   - Hover con fondo azul
+   7) TEMA (separador arriba)
    ========================================== */
-.nav-logout {
+.nav-theme-toggle {
   margin-top: auto;
-  padding: 16px 12px 20px 12px;
+  padding-top: 8px;
   border-top: 1px solid var(--border-color);
 }
 
-.logout-btn {
-  width: 100%;
-  padding: 10px 14px;
-
-  background: transparent;
-  color: var(--primary-blue);
-
-  border: 1px solid var(--primary-blue);
-  border-radius: 8px;
-
-  font-size: 13px;
-  font-weight: 600;
-
-  cursor: pointer;
-  
-  transition: all 0.2s ease;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-
-.logout-btn:hover {
-  background-color: var(--primary-blue);
-  color: var(--primary-white);
-}
-
-.logout-btn:active {
-  transform: scale(0.98);
-}
-
 /* ==========================================
-   8) DARK MODE (AJUSTES ESPECÍFICOS)
-   ------------------------------------------
-   - Refinamientos para modo oscuro
-   - Mantiene el mismo diseño limpio
+   8) LOGOUT (como item normal)
    ========================================== */
+.nav-logout {
+  padding: 10px 0 16px;                 /* ✅ sin padding lateral extra */
+  margin-top: 6px;
+  border-top: 1px solid var(--border-color);
+}
 
-/* Hover en dark mode */
+.logout-link {
+  width: calc(100% - 16px);
+  margin: 0 8px;
+
+  /* ✅ mismo look que el resto, pero con hover "peligro" suave */
+  color: var(--text-gray);
+}
+
+.logout-link:hover {
+  background: rgba(239, 68, 68, 0.10);  /* rojo suave */
+  color: #ef4444;
+}
+
+/* Dark mode */
+:root[data-theme="dark"] .logout-link:hover {
+  background: rgba(239, 68, 68, 0.16);
+  color: #ef4444  !important; /*puse important para que no se pise con los demas hover */
+}
+/* ==========================================
+   9) DARK MODE AJUSTES
+   ========================================== */
 :root[data-theme="dark"] .nav-link:hover {
   background-color: rgba(148, 163, 184, 0.12);
   color: var(--text-dark);
 }
 
-/* Activo en dark mode */
 :root[data-theme="dark"] .nav-link.active {
   background-color: rgba(96, 165, 250, 0.15);
   color: #60a5fa;
 }
 
-/* Logo en dark mode */
 :root[data-theme="dark"] .nav-logo-circle {
   background-color: #60a5fa;
 }
 
-/* Logout en dark mode */
-:root[data-theme="dark"] .logout-btn {
-  border-color: #60a5fa;
-  color: #60a5fa;
-}
-
-:root[data-theme="dark"] .logout-btn:hover {
-  background-color: #60a5fa;
-  color: #0b1220;
-}
-
-/* Scrollbar en dark mode */
-:root[data-theme="dark"] .modern-nav::-webkit-scrollbar-thumb {
+/* si en mobile el scroll vuelve al nav, esto también aplica */
+:root[data-theme="dark"] .nav-scroll::-webkit-scrollbar-thumb {
   background: rgba(148, 163, 184, 0.25);
 }
-
-:root[data-theme="dark"] .modern-nav::-webkit-scrollbar-thumb:hover {
+:root[data-theme="dark"] .nav-scroll::-webkit-scrollbar-thumb:hover {
   background: rgba(148, 163, 184, 0.4);
 }
 
-/* Settings popover en dark mode */
-:root[data-theme="dark"] .settings-popover {
-  background: rgba(15, 23, 42, 0.5);
-  border-color: rgba(255, 255, 255, 0.08);
-}
-
 /* ==========================================
-   9) RESPONSIVE (MOBILE <= 768px)
-   ------------------------------------------
-   - Botón hamburguesa flotante
-   - Sidebar como popover dropdown
-   - Overlay con blur
+   10) RESPONSIVE (MOBILE)
    ========================================== */
 @media (max-width: 768px) {
-  
-  /* ======================================
-     9.1) BOTÓN HAMBURGUESA (☰)
-     - Posicionado arriba a la derecha
-     - Diseño simple y funcional
-     ====================================== */
   .mobile-menu-btn {
     position: fixed;
     top: 16px;
@@ -430,7 +369,6 @@
     cursor: pointer;
 
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    
     transition: all 0.2s ease;
 
     display: flex;
@@ -438,19 +376,9 @@
     justify-content: center;
   }
 
-  .mobile-menu-btn:hover {
-    transform: scale(1.05);
-  }
+  .mobile-menu-btn:hover { transform: scale(1.05); }
+  .mobile-menu-btn:active { transform: scale(0.95); }
 
-  .mobile-menu-btn:active {
-    transform: scale(0.95);
-  }
-
-  /* ======================================
-     9.2) OVERLAY (FONDO OSCURO)
-     - Backdrop con blur
-     - Click para cerrar menú
-     ====================================== */
   .mobile-overlay {
     position: fixed;
     inset: 0;
@@ -461,11 +389,6 @@
     -webkit-backdrop-filter: blur(4px);
   }
 
-  /* ======================================
-     9.3) SIDEBAR EN MOBILE (POPOVER)
-     - Dropdown desde arriba a la derecha
-     - Ancho responsivo
-     ====================================== */
   .modern-nav {
     position: fixed;
     top: 68px;
@@ -483,12 +406,12 @@
 
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 
+    /* en mobile podés dejar el scroll en el nav, porque no hay botón afuera */
     overflow: hidden;
     overflow-y: auto;
 
     z-index: 3001;
 
-    /* Estado cerrado (invisible) */
     opacity: 0;
     transform: translateY(-8px) scale(0.95);
     pointer-events: none;
@@ -496,50 +419,33 @@
     transition: all 0.2s ease;
   }
 
-  /* Estado abierto */
   .modern-nav.mobile-open {
     opacity: 1;
     transform: translateY(0) scale(1);
     pointer-events: auto;
   }
 
-  /* Ajuste de padding en mobile */
-  .nav-header {
-    padding: 16px 14px 14px 14px;
+  /* En mobile: no colapsar visualmente */
+  .modern-nav.mobile-open .nav-label,
+  .modern-nav.mobile-open .nav-title {
+    opacity: 1 !important;
+    width: auto !important;
   }
 
-  .nav-items-left {
-    gap: 1px;
-  }
+  /* Ocultar toggle colapsar en mobile */
+  .collapse-toggle-btn { display: none; }
 
-  .nav-link {
-    margin: 0 8px;
-    padding: 9px 10px;
-  }
+  /* NO tooltips en mobile */
+  .sidebar-tooltip { display: none; }
 
-  .settings-popover {
-    margin: 6px 8px 6px 8px;
-  }
-
-  .nav-logout {
-    padding: 14px 8px 16px 8px;
-  }
-
-  /* ======================================
-     9.4) DARK MODE EN MOBILE
-     - Overlay más oscuro
-     - Mantiene diseño limpio
-     ====================================== */
-  :root[data-theme="dark"] .mobile-overlay {
-    background: rgba(0, 0, 0, 0.5);
-  }
-
+  :root[data-theme="dark"] .mobile-overlay { background: rgba(0, 0, 0, 0.5); }
   :root[data-theme="dark"] .modern-nav {
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
     border-color: rgba(255, 255, 255, 0.08);
   }
+  :root[data-theme="dark"] .mobile-menu-btn { background-color: #60a5fa; }
+}
 
-  :root[data-theme="dark"] .mobile-menu-btn {
-    background-color: #60a5fa;
-  }
+@media (min-width: 769px) {
+  .mobile-menu-btn { display: none; }
 }
